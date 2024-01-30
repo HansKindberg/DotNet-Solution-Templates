@@ -21,6 +21,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/HansKindberg/DotNet-Solution-Templates</PackageProjectUrl>
 		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+		<PackageReleaseNotes>https://github.com/HansKindberg/DotNet-Solution-Templates/releases</PackageReleaseNotes>
 		<PackageTags>DotNet multi-project multi-project-templates solution solution-templates Templates</PackageTags>
 		<PackageType>Template</PackageType>
 		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
