@@ -1,0 +1,6 @@
+
+            # Spa/wwwroot/appsettings.json
+            echo "mkdir -p '$(ARTIFACT_DIRECTORY)/Spa/wwwroot' ..."
+            mkdir -p "$(ARTIFACT_DIRECTORY)/Spa/wwwroot"
+            echo "cp '$(TRANSFORM_DIRECTORY)/Spa/wwwroot/appsettings.json' '$(ARTIFACT_DIRECTORY)/Spa/wwwroot/appsettings.json' ..."
+            cp "$(TRANSFORM_DIRECTORY)/Spa/wwwroot/appsettings.json" "$(ARTIFACT_DIRECTORY)/Spa/wwwroot/appsettings.json"

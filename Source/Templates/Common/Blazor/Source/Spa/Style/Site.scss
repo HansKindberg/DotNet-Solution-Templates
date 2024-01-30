@@ -1,0 +1,10 @@
+@import "Parts/Variables";
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+body {
+	margin-top: 1em;
+}
+
+.container, .container-sm, .container-md, .container-lg, .container-xl {
+	max-width: 720px;
+}

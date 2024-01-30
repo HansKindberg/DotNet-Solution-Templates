@@ -1,0 +1,199 @@
+parameters:
+- name: "Environment"
+  type: string
+  values:
+  - "Production"
+  - "Stage"
+  - "Test"
+
+jobs:
+- deployment: "Deployment" # There are problems naming jobs: Deploy - https://developercommunity.visualstudio.com/t/job-is-pending-1/1044298
+  displayName: "Deployment"
+  environment: "${{ parameters.Environment }}"
+  variables:
+  - template: "Variables.yml"
+  - name: ARTIFACT_DIRECTORY
+    value: "$(Build.ArtifactStagingDirectory)/${{ parameters.Environment }}"
+  - name: HOST
+    value: "${{ variables[format('HOST_{0}', upper(parameters.Environment))] }}"
+  - name: IMAGE
+    value: "${{ variables[format('IMAGE_{0}', upper(parameters.Environment))] }}"
+  - name: IMAGE_REGISTRY
+    value: "${{ variables[format('IMAGE_REGISTRY_{0}', upper(parameters.Environment))] }}"
+  - name: KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY
+    value: "$(KUBERNETES_RESOURCES_REPOSITORY_BASE_DIRECTORY)/${{ parameters.Environment }}"
+  - name: REPLICAS
+    value: "${{ variables[format('REPLICAS_{0}', upper(parameters.Environment))] }}"
+  - name: TRANSFORM_DIRECTORY
+    value: "$(TRANSFORM_BASE_DIRECTORY)/${{ parameters.Environment }}"
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: none
+        - script: |
+            echo "ARTIFACT_DIRECTORY = $(ARTIFACT_DIRECTORY)"
+            echo "Build.BuildNumber = $(Build.BuildNumber)"
+            echo "HOST = $(HOST)"
+            echo "IMAGE = $(IMAGE)"
+            echo "IMAGE_REGISTRY = $(IMAGE_REGISTRY)"
+            echo "KUBERNETES_RESOURCES_REPOSITORY_BASE_DIRECTORY = $(KUBERNETES_RESOURCES_REPOSITORY_BASE_DIRECTORY)"
+            echo "KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY = $(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)"
+            echo "KUBERNETES_RESOURCES_REPOSITORY_URI_FORMAT = $(KUBERNETES_RESOURCES_REPOSITORY_URI_FORMAT)"
+            echo "KUBERNETES_TEMPLATE_FILE = $(KUBERNETES_TEMPLATE_FILE)"
+            echo "REPLICAS = $(REPLICAS)"
+            echo "TRANSFORM_BASE_DIRECTORY = $(TRANSFORM_BASE_DIRECTORY)"
+            echo "TRANSFORM_DIRECTORY = $(TRANSFORM_DIRECTORY)"
+          displayName: "Information"
+          failOnStderr: true
+        - powershell: |
+            # New-PackageTransform: We need "https://www.powershellgallery.com/packages/RegionOrebroLan.Transforming/2.0.0" (or higher) on the build agent.
+            # We want a source where transformations are made for the specific environment.
+            # Configuraton-files are transformed and the transformed configuration-files can be used as configuration-maps.
+            $destination = "$(TRANSFORM_DIRECTORY)";
+            $source = "$(Build.SourcesDirectory)/Source";
+            $transformationName = "Deploy.${{ parameters.Environment }}";
+            Write-Host "Transforming from soure '$($source)' to destination '$($destination)' with transformation-names 'Deploy' & '$($transformationName)' ...";
+            New-PackageTransform `
+              -Destination $destination `
+              -FileToTransformPatterns "**/appsettings*.json" `
+              -Source $source `
+              -TransformationNames "Deploy", $transformationName;
+            Write-Host "Transformed from soure '$($source)' to destination '$($destination)' with transformation-names 'Deploy' & '$($transformationName)'.";
+          displayName: "Transform"
+          failOnStderr: true
+        - script: |
+            # Seems like the Blazor appsettings can't be handled with config-map. Have tested it without success.
+            # Instead we replace the Blazor appsettings.json in the source, with the transformed one from the previous step.
+            echo "Replacing Spa/wwwroot/appsettings.json ..."
+            cp "$(TRANSFORM_DIRECTORY)/Spa/wwwroot/appsettings.json" "Source/Spa/wwwroot/appsettings.json" -v
+            echo "Replaced Spa/wwwroot/appsettings.json."
+          displayName: "Replace Spa/wwwroot/appsettings.json"
+          failOnStderr: true
+        - script: |
+            image="$(IMAGE)"
+            echo "docker build '.' -f 'Source/Bff/Dockerfile' -t '$image' ..."
+            docker build "." -f "Source/Bff/Dockerfile" -t "$image"
+          displayName: "docker build"
+          failOnStderr: true # We may have to set this to false.
+        - script: |
+            # Bff/appsettings.json
+            echo "mkdir -p '$(ARTIFACT_DIRECTORY)/Bff' ..."
+            mkdir -p "$(ARTIFACT_DIRECTORY)/Bff"
+            echo "cp '$(TRANSFORM_DIRECTORY)/Bff/appsettings.json' '$(ARTIFACT_DIRECTORY)/Bff/appsettings.json' ..."
+            cp "$(TRANSFORM_DIRECTORY)/Bff/appsettings.json" "$(ARTIFACT_DIRECTORY)/Bff/appsettings.json"
+            
+            # Spa/wwwroot/appsettings.json
+            echo "mkdir -p '$(ARTIFACT_DIRECTORY)/Spa/wwwroot' ..."
+            mkdir -p "$(ARTIFACT_DIRECTORY)/Spa/wwwroot"
+            echo "cp '$(TRANSFORM_DIRECTORY)/Spa/wwwroot/appsettings.json' '$(ARTIFACT_DIRECTORY)/Spa/wwwroot/appsettings.json' ..."
+            cp "$(TRANSFORM_DIRECTORY)/Spa/wwwroot/appsettings.json" "$(ARTIFACT_DIRECTORY)/Spa/wwwroot/appsettings.json"
+
+            # Image content
+            containerName="23bb7d52-b58b-4483-a6cd-15a258cdfe82"
+            image="$(IMAGE)"
+
+            echo "docker create --name '$containerName' '$image' ..."
+            docker create --name "$containerName" "$image"
+
+            echo "docker export '$containerName' --output '$(ARTIFACT_DIRECTORY)/Image-content.tar' ..."
+            docker export "$containerName" --output "$(ARTIFACT_DIRECTORY)/Image-content.tar"
+            
+            echo "docker rm '$containerName' ..."
+            docker rm "$containerName"            
+          displayName: "Create artifacts"
+          failOnStderr: true
+        - task: PublishBuildArtifacts@1
+          displayName: "Publish artifacts"
+          inputs:
+            artifactName: "Drop"
+            pathtoPublish: "$(Build.ArtifactStagingDirectory)"
+        - script: |
+            echo "rm --force --recursive '$(ARTIFACT_DIRECTORY)' ..."
+            rm --force --recursive "$(ARTIFACT_DIRECTORY)"
+
+            echo "ls -a '$(Build.ArtifactStagingDirectory)' ..."
+            ls -a "$(Build.ArtifactStagingDirectory)"
+          displayName: "Artifact cleanup"
+          failOnStderr: true
+        - script: |
+            image="$(IMAGE)"
+            imageRegistry="$(IMAGE_REGISTRY)"
+
+            echo "docker login -p '**********' -u unset '$imageRegistry' ..."
+            docker login -p "$IMAGE_REGISTRY_TOKEN" -u unset "$imageRegistry"
+            echo "docker push '$image' ..."
+            docker push "$image"
+          displayName: "docker login & push"
+          env:
+            # Set secret variables - Use a secret variable in the UI: https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables?view=azure-devops&tabs=yaml%2Cbash#use-a-secret-variable-in-the-ui
+            IMAGE_REGISTRY_TOKEN: $(IMAGE_REGISTRY_TOKEN)
+          failOnStderr: true # We may have to set this to false.
+        - script: |
+            echo "docker images ..."
+            docker images
+          displayName: "docker images - before cleanup"
+          failOnStderr: true
+        - script: |
+            image="$(IMAGE)"
+
+            echo "docker rmi '$image' -f ..."
+            docker rmi "$image" -f
+          displayName: "docker rmi (cleanup)"
+          failOnStderr: true
+        - script: |
+            echo "docker images ..."
+            docker images
+          displayName: "docker images - after cleanup"
+          failOnStderr: true
+        - script: |
+            image="$(IMAGE)"
+            repositoryUri=$(echo "$(KUBERNETES_RESOURCES_REPOSITORY_URI_FORMAT)" | sed "s/{0}/$KUBERNETES_RESOURCES_REPOSITORY_TOKEN/1")
+            resourcesDirectory="$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)/${{ parameters.Environment }}/Resources"
+
+            echo "git clone --branch '$KUBERNETES_RESOURCES_REPOSITORY_BRANCH' '$repositoryUri' '$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)' --progress ..."
+            git clone --branch "$KUBERNETES_RESOURCES_REPOSITORY_BRANCH" "$repositoryUri" "$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)" --progress
+
+            echo "mkdir -p 'resourcesDirectory' ..."
+            mkdir -p "$resourcesDirectory"
+
+            echo "oc create configmap 'appsettings-configmap' --from-file='$(TRANSFORM_DIRECTORY)/Bff/appsettings.json' -o yaml --dry-run=client > '$resourcesDirectory/appsettings-config-ConfigMap.yaml' ..."
+            oc create configmap "appsettings-configmap" --from-file="$(TRANSFORM_DIRECTORY)/Bff/appsettings.json" -o yaml --dry-run=client > "$resourcesDirectory/appsettings-config-ConfigMap.yaml"
+
+            echo "oc process -f '$(KUBERNETES_TEMPLATE_FILE)' -p BUILD_NUMBER='$(Build.BuildNumber)' -p CONTAINER_IMAGE='$image' -p HOST='$(HOST)' -p REPLICAS='$(REPLICAS)' -o yaml > '$resourcesDirectory/Resources.yaml' ..."
+            oc process -f "$(KUBERNETES_TEMPLATE_FILE)" -p BUILD_NUMBER="$(Build.BuildNumber)" -p CONTAINER_IMAGE="$image" -p HOST="$(HOST)" -p REPLICAS="$(REPLICAS)" -o yaml > "$resourcesDirectory/Resources.yaml"
+
+            echo "ls -a '$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)' ..."
+            ls -a "$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)"
+            echo "ls -a '$resourcesDirectory' ..."
+            ls -a "$resourcesDirectory"
+
+            echo "cd '$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)' ..."
+            cd "$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)"
+            echo "git add --all --verbose ..."
+            git add --all --verbose
+            echo "git diff-index --quiet HEAD || git commit --message 'Pipeline committed resources ($(Build.BuildNumber)).' --verbose && git push --verbose ..."
+            git diff-index --quiet HEAD || git commit --message "Pipeline committed resources ($(Build.BuildNumber))." --verbose && git push --verbose # https://stackoverflow.com/questions/8123674/how-to-git-commit-nothing-without-an-error#answer-8123841
+
+            echo "rm --force --recursive '$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)' ..."
+            rm --force --recursive "$(KUBERNETES_RESOURCES_REPOSITORY_DIRECTORY)"
+
+            echo "ls -a '$(KUBERNETES_RESOURCES_REPOSITORY_BASE_DIRECTORY)' ..."
+            ls -a "$(KUBERNETES_RESOURCES_REPOSITORY_BASE_DIRECTORY)"
+          displayName: "Kubernetes deploy"
+          env:
+            ${{ if eq(parameters.Environment, 'Production') }}:
+              KUBERNETES_RESOURCES_REPOSITORY_BRANCH: "prod"
+            ${{ if or(eq(parameters.Environment, 'Stage'), eq(parameters.Environment, 'Test')) }}:
+              KUBERNETES_RESOURCES_REPOSITORY_BRANCH: "dev"
+            # Set secret variables - Use a secret variable in the UI: https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables?view=azure-devops&tabs=yaml%2Cbash#use-a-secret-variable-in-the-ui
+            KUBERNETES_RESOURCES_REPOSITORY_TOKEN: $(KUBERNETES_RESOURCES_REPOSITORY_TOKEN)
+          failOnStderr: true # We may have to set this to false.
+        - script: |
+            echo "rm --force --recursive '$(TRANSFORM_DIRECTORY)' ..."
+            rm --force --recursive "$(TRANSFORM_DIRECTORY)"
+
+            echo "ls -a '$(TRANSFORM_BASE_DIRECTORY)' ..."
+            ls -a "$(TRANSFORM_BASE_DIRECTORY)"
+          displayName: "Transform cleanup"
+          failOnStderr: true

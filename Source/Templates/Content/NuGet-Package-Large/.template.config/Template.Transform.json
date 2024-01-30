@@ -1,0 +1,10 @@
+{
+	"classifications": [
+		"NuGet",
+		"Project",
+		"Solution"
+	],
+	"identity": "HK-NuGet-Package-Large",
+	"name": "HK-NuGet-Package-Large",
+	"shortName": "hk-nuget-package-l"
+}

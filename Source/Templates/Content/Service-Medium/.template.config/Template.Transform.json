@@ -1,0 +1,11 @@
+{
+	"classifications": [
+		"Api",
+		"Project",
+		"Service",
+		"Solution"
+	],
+	"identity": "HK-Service-Medium",
+	"name": "HK-Service-Medium",
+	"shortName": "hk-service-m"
+}

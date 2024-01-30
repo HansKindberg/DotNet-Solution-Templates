@@ -1,0 +1,4 @@
+variables:
+  ARTIFACT_NAME: "Drop" # Normally/default this has the value "drop".
+  NUGET_PRODUCTION_FEED_URL: "https://nuget.example.org/nuget/feed/v3/index.json"
+  NUGET_TEST_FEED_URL: "https://nuget-test.example.org/nuget/feed/v3/index.json"

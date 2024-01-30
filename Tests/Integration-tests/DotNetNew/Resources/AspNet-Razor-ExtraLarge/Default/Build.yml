@@ -1,0 +1,48 @@
+jobs:
+- job: "Build"
+  displayName: "Build"
+  variables:
+  - template: "Variables.yml"
+  - name: BUILD_CONFIGURATION
+    value: "Release"
+  - name: BUILD_PROJECTS
+    value: "[Ss]ource/**/*.csproj"
+  - name: TEST_PROJECTS
+    value: "[Tt]ests/**/*.csproj"
+  # - name: TEST_PROJECTS
+  #   value: "[Tt]ests/Unit-tests/**/*.csproj" # If we just want to run unit tests after the build.
+  workspace:
+    clean: all
+  steps:
+  - task: UseDotNet@2
+    displayName: "Use .NET Core sdk 8.0"
+    inputs:
+      version: 8.0.x
+  - task: NodeTool@0
+    displayName: "Use Node.js"
+    inputs:
+      versionSpec: "20.10.x" # https://nodejs.org/en - go for the latest LTS (Long Term Support) version.
+  - task: DotNetCoreCLI@2
+    displayName: "Restore"
+    env:
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/nuget-signed-package-verification#linux
+      DOTNET_NUGET_SIGNATURE_VERIFICATION: false
+    inputs:
+      command: restore
+      feedsToUse: "config"
+      nugetConfigPath: "NuGet.config"
+      projects: "$(BUILD_PROJECTS)"
+  - task: DotNetCoreCLI@2
+    displayName: "Build"
+    inputs:
+      arguments: "--configuration $(BUILD_CONFIGURATION)"
+      projects: "$(BUILD_PROJECTS)"
+  - task: DotNetCoreCLI@2
+    displayName: "Test"
+    env:
+      # https://learn.microsoft.com/en-us/dotnet/core/tools/nuget-signed-package-verification#linux
+      DOTNET_NUGET_SIGNATURE_VERIFICATION: false
+    inputs:
+      arguments: "--configuration $(BUILD_CONFIGURATION)"
+      command: test
+      projects: "$(TEST_PROJECTS)"

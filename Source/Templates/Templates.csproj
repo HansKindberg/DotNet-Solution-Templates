@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>HansKindberg-DotNet-Solution-Templates</AssemblyName>
+		<Authors>Hans Kindberg</Authors>
+		<ContentTargetFolders>content</ContentTargetFolders>
+		<Description>A template-package for creating solutions, with one or more projects, in dotnet / Visual Studio.</Description>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<IncludeContentInPack>true</IncludeContentInPack>
+		<!--
+			IncludeSourceRevisionInInformationalVersion = false
+			Just so the integration-tests can get the NuGet-package and test it's contents.
+			- https://stackoverflow.com/questions/77050814/fileversioninfo-productversion-suddenly-contains-git-commit-hash#answer-77051386
+			- Git commit ID included in assembly ProductVersion field when building with sdk 8 #34568 - https://github.com/dotnet/sdk/issues/34568
+		-->
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		<LocalizeTemplates>false</LocalizeTemplates>
+		<NoDefaultExcludes>true</NoDefaultExcludes>
+		<NoWarn>$(NoWarn);NU5128</NoWarn>
+		<PackageId>$(AssemblyName)</PackageId>
+		<PackageProjectUrl>https://github.com/HansKindberg/DotNet-Solution-Templates</PackageProjectUrl>
+		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+		<PackageTags>DotNet multi-project multi-project-templates solution solution-templates Templates</PackageTags>
+		<PackageType>Template</PackageType>
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<Title>$(AssemblyName)</Title>
+		<VersionPrefix>0.0.1</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.TemplateEngine.Tasks" Version="*" PrivateAssets="all" IsImplicitlyDefined="true" />
+		<PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="4.0.50">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="DotNet-New-tests" />
+		<InternalsVisibleTo Include="Integration-tests" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="**/*" />
+		<!-- Global.cs: Just here for the integration-tests. -->
+		<Compile Include="Global.cs" />
+		<!-- Common - begin -->
+		<Content Remove="Common/**/*" />
+		<None Remove="Common/**/*" />
+		<None Include="Common/**/*" Exclude="Common/**/.vs/**;Common/**/bin/**;Common/**/obj/**;Common/**/*.csproj.user" />
+		<!-- Common - end -->
+		<!-- Content - begin -->
+		<Content Include="Content/**/*" Exclude="Content/**/.vs/**;Content/**/bin/**;Content/**/obj/**">
+			<PackagePath>content</PackagePath>
+		</Content>
+		<Content Remove="Content/**/Template.*.json" />
+		<None Remove="Content/**/*" />
+		<None Include="Content/**/Template.*.json" />
+		<!-- Content - end -->
+		<None Include="ReadMe.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+	<Import Project="Build.targets" />
+</Project>

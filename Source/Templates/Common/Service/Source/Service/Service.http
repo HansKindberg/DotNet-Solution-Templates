@@ -1,0 +1,6 @@
+@host=localhost
+@port=5000
+@scheme=https
+@origin={{scheme}}://{{host}}:{{port}}
+GET {{origin}}/example/get
+Accept: application/json

@@ -1,0 +1,57 @@
+jobs:
+- job: "Build"
+  displayName: "Build"
+  variables:
+  - template: "Variables.yml"
+  - name: BUILD_CONFIGURATION
+    value: "Release"
+  - name: BUILD_PROJECTS
+    value: "[Ss]ource/**/*.csproj"
+  - name: TEST_PROJECTS
+    value: "[Tt]ests/**/*.csproj"
+  # - name: TEST_PROJECTS
+  #   value: "[Tt]ests/Unit-tests/**/*.csproj" # If we just want to run unit tests after the build.
+  workspace:
+    clean: all
+  steps:
+  - task: UseDotNet@2
+    displayName: "Use .NET Core sdk 6.0"
+    inputs:
+      version: 6.0.x
+  - task: UseDotNet@2
+    displayName: "Use .NET Core sdk 7.0"
+    inputs:
+      version: 7.0.x
+  - task: UseDotNet@2
+    displayName: "Use .NET Core sdk 8.0"
+    inputs:
+      version: 8.0.x
+  - task: DotNetCoreCLI@2
+    displayName: "Restore"
+    inputs:
+      command: restore
+      feedsToUse: "config"
+      nugetConfigPath: "NuGet.config"
+      projects: "$(BUILD_PROJECTS)"
+  - task: DotNetCoreCLI@2
+    displayName: "Build"
+    inputs:
+      arguments: "--configuration $(BUILD_CONFIGURATION)"
+      projects: "$(BUILD_PROJECTS)"
+  - task: DotNetCoreCLI@2
+    displayName: "Test"
+    inputs:
+      arguments: "--configuration $(BUILD_CONFIGURATION)"
+      command: test
+      projects: "$(TEST_PROJECTS)"
+  - task: CopyFiles@2
+    displayName: "Prepare publish"
+    inputs:
+      contents: "*.nupkg"
+      sourceFolder: "$(Build.SourcesDirectory)/Source/Project/bin/$(BUILD_CONFIGURATION)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)"
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish"
+    inputs:
+      artifactName: "$(ARTIFACT_NAME)"
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)"

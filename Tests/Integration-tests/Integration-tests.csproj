@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>IntegrationTests</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="NuGet.Packaging" Version="6.8.0" />
+		<PackageReference Include="SimpleExec" Version="12.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<_None Include="DotNetNew/Content/**/*;DotNetNew/Projects/**/*" />
+		<Compile Remove="@(_None)" />
+		<Content Remove="@(_None)" />
+		<None Remove="@(_None)" />
+		<None Include="@(_None)" />
+		<!-- xUnit settings -->
+		<Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+</Project>

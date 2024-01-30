@@ -1,0 +1,20 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		// https://stackoverflow.com/questions/76880343/visual-studio-2022-esproj-default-client-browser#answer-76880344
+		{
+			"name": "localhost (Chrome)",
+			"request": "launch",
+			"type": "chrome",
+			"url": "https://localhost:5000",
+			"webRoot": "${workspaceFolder}"
+		},
+		{
+			"name": "localhost (Edge)",
+			"request": "launch",
+			"type": "edge",
+			"url": "https://localhost:5000",
+			"webRoot": "${workspaceFolder}"
+		}
+	]
+}

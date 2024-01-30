@@ -1,0 +1,42 @@
+variables:
+  # Requires the following pipeline secrets:
+  # KUBERNETES_API_TOKEN_PRODUCTION
+  # KUBERNETES_API_TOKEN_STAGE
+  # KUBERNETES_API_TOKEN_TEST
+
+  _GIT_HASH: ${BUILD_SOURCEVERSION:0:8} # Only works on a Linux build-agent, not on a Windows build-agent.
+  _IMAGE_PATH_FORMAT: "/example-namespace{0}/blazor:{1}$(_GIT_HASH)"
+
+  KUBERNETES_TEMPLATE_FILE: "$(Build.SourcesDirectory)/.kubernetes/Template.yml" # Path to the Kubernetes template file.
+
+  # Production
+  HOST_PRODUCTION: "blazor.example.org"
+  IMAGE_PATH_PRODUCTION: "$[format(variables['_IMAGE_PATH_FORMAT'], '-production', '')]"
+  IMAGE_PULL_REGISTRY_PRODUCTION: "image-registry.openshift-image-registry.svc:5000"
+  IMAGE_PUSH_REGISTRY_PRODUCTION: "default-route-openshift-image-registry.apps.prod.example.org"
+  IMAGE_PULL_PRODUCTION: "$(IMAGE_PULL_REGISTRY_PRODUCTION)$(IMAGE_PATH_PRODUCTION)"
+  IMAGE_PUSH_PRODUCTION: "$(IMAGE_PUSH_REGISTRY_PRODUCTION)$(IMAGE_PATH_PRODUCTION)"
+  KUBERNETES_API_URL_PRODUCTION: "kubernetes-api.prod.example.org"
+  REPLICAS_PRODUCTION: 2 # REPLICAS - the number of nodes for the load-balancing
+
+  # Stage
+  HOST_STAGE: "blazor-stage.example.org"
+  IMAGE_PATH_STAGE: "$[format(variables['_IMAGE_PATH_FORMAT'], '-stage', 'stage-')]"
+  IMAGE_PULL_REGISTRY_STAGE: "$(IMAGE_PULL_REGISTRY_PRODUCTION)"
+  IMAGE_PUSH_REGISTRY_STAGE: "default-route-openshift-image-registry.apps.dev.example.org"
+  IMAGE_PULL_STAGE: "$(IMAGE_PULL_REGISTRY_STAGE)$(IMAGE_PATH_STAGE)"
+  IMAGE_PUSH_STAGE: "$(IMAGE_PUSH_REGISTRY_STAGE)$(IMAGE_PATH_STAGE)"
+  KUBERNETES_API_URL_STAGE: "kubernetes-api.dev.example.org"
+  REPLICAS_STAGE: 2
+
+  # Test
+  HOST_TEST: "blazor-test.example.org"
+  IMAGE_PATH_TEST: "$[format(variables['_IMAGE_PATH_FORMAT'], '-test', 'test-')]"
+  IMAGE_PULL_REGISTRY_TEST: "$(IMAGE_PULL_REGISTRY_STAGE)"
+  IMAGE_PUSH_REGISTRY_TEST: "$(IMAGE_PUSH_REGISTRY_STAGE)"
+  IMAGE_PULL_TEST: "$(IMAGE_PULL_REGISTRY_TEST)$(IMAGE_PATH_TEST)"
+  IMAGE_PUSH_TEST: "$(IMAGE_PUSH_REGISTRY_TEST)$(IMAGE_PATH_TEST)"
+  KUBERNETES_API_URL_TEST: "$(KUBERNETES_API_URL_STAGE)"
+  REPLICAS_TEST: 1
+
+  TRANSFORM_BASE_DIRECTORY: "$(Pipeline.Workspace)/Transform"

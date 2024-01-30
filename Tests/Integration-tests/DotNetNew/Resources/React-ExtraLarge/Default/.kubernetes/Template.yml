@@ -1,0 +1,87 @@
+apiVersion: "template.openshift.io/v1"
+kind: "Template"
+objects:
+- apiVersion: "apps/v1"
+  kind: "Deployment"
+  metadata:
+    name: "deployment"
+  spec:
+    replicas: "${{REPLICAS}}"
+    selector:
+      matchLabels:
+        identifier: "${CONTAINER_NAME}"
+    template:
+      metadata:
+        annotations:
+          build_number: "${BUILD_NUMBER}" # To trigger a change if we use constant image-tags. Eg. if we tag our images my-image:latest.
+        labels:
+          identifier: "${CONTAINER_NAME}"
+      spec:
+        containers:
+        - env:
+          - name: "ASPNETCORE_URLS"
+            value: "http://+:5000"
+          image: "${CONTAINER_IMAGE}"
+          imagePullPolicy: Always
+          name: "${CONTAINER_NAME}"
+          ports:
+          - containerPort: 5000
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          volumeMounts:
+          - mountPath: "/app/appsettings.json"
+            name: "appsettings-volume"
+            readOnly: true
+            subPath: "appsettings.json"
+        serviceAccountName: "${SERVICE_ACCOUNT_NAME}"
+        volumes:
+        - configMap:
+            name: "appsettings-configmap"
+          name: "appsettings-volume"
+- apiVersion: "v1"
+  kind: "Service"
+  metadata:
+    name: "${SERVICE_NAME}"
+  spec:
+    ports:
+    - port: 5000
+      targetPort: 5000
+    selector:
+      identifier: "${CONTAINER_NAME}"
+- apiVersion: "route.openshift.io/v1"
+  kind: "Route"
+  metadata:
+    # https://docs.openshift.com/container-platform/4.10/networking/routes/route-configuration.html#nw-enabling-hsts_route-configuration
+    annotations:
+      haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload # Max-age in seconds, 31536000 = 365 days (1 year)
+    labels:
+      zone: internal
+    name: "route"
+  spec:
+    host: "${HOST}"
+    to:
+      kind: "Service"
+      name: "${SERVICE_NAME}"
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+parameters:
+- name: "BUILD_NUMBER"
+  required: true
+- name: "CONTAINER_IMAGE"
+  required: true
+- name: "CONTAINER_NAME"
+  value: "container"
+- name: "HOST"
+  required: true
+- name: "REPLICAS"
+  value: "1"
+- name: "SERVICE_NAME"
+  value: "service"
+- name: "SERVICE_ACCOUNT_NAME"
+  value: "azure-devops"

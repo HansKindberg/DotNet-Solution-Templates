@@ -1,0 +1,5 @@
+{
+	"$schema": "https://xunit.net/schema/current/xunit.runner.schema.json",
+	// https://xunit.net/docs/configuration-files
+	"parallelizeTestCollections": false // Sequential, https://xunit.net/docs/configuration-files#parallelizeTestCollections
+}

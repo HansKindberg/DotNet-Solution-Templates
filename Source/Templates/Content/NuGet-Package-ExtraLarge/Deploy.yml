@@ -1,0 +1,35 @@
+parameters:
+- name: "Environment"
+  type: string
+  values:
+  - "Production"
+  - "Test"
+
+jobs:
+- deployment: "Deployment" # There are problems naming jobs: Deploy - https://developercommunity.visualstudio.com/t/job-is-pending-1/1044298
+  displayName: "Deployment"
+  environment: "${{ parameters.Environment }}"
+  variables:
+  - template: "Variables.yml"
+  - name: NUGET_FEED_URL
+    value: "${{ variables[format('NUGET_{0}_FEED_URL', upper(parameters.Environment))] }}"
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: none
+        - script: |
+            echo "NUGET_FEED_URL = $(NUGET_FEED_URL)"
+          displayName: "Information"
+        - task: DownloadBuildArtifacts@0
+          displayName: "Download artifacts"
+          inputs:
+            artifactName: "$(ARTIFACT_NAME)"
+            buildType: "current"
+            downloadPath: "$(Build.ArtifactStagingDirectory)"
+        - task: DotNetCoreCLI@2
+          displayName: "NuGet push"
+          inputs:
+            arguments: "push $(Build.ArtifactStagingDirectory)/**/*.nupkg -s $(NUGET_FEED_URL)"
+            command: custom
+            custom: nuget

@@ -1,0 +1,37 @@
+variables:
+  # Requires the following pipeline secrets:
+  # IMAGE_REGISTRY_TOKEN
+  # KUBERNETES_API_TOKEN_PRODUCTION
+  # KUBERNETES_API_TOKEN_STAGE
+  # KUBERNETES_API_TOKEN_TEST
+
+  _GIT_HASH: ${BUILD_SOURCEVERSION:0:8} # Only works on a Linux build-agent, not on a Windows build-agent.
+  _IMAGE_PATH_FORMAT: "/example-organization/blazor:{0}$(_GIT_HASH)"
+
+  KUBERNETES_TEMPLATE_FILE: "$(Build.SourcesDirectory)/.kubernetes/Template.yml" # Path to the Kubernetes template file.
+
+  # Production
+  HOST_PRODUCTION: "blazor.example.org"
+  IMAGE_PATH_PRODUCTION: "$[format(variables['_IMAGE_PATH_FORMAT'], '')]"
+  IMAGE_REGISTRY_PRODUCTION: "docker.io"
+  IMAGE_PRODUCTION: "$(IMAGE_REGISTRY_PRODUCTION)$(IMAGE_PATH_PRODUCTION)"
+  KUBERNETES_API_URL_PRODUCTION: "kubernetes-api.prod.example.org"
+  REPLICAS_PRODUCTION: 2 # REPLICAS - the number of nodes for the load-balancing
+
+  # Stage
+  HOST_STAGE: "blazor-stage.example.org"
+  IMAGE_PATH_STAGE: "$[format(variables['_IMAGE_PATH_FORMAT'], 'stage-')]"
+  IMAGE_REGISTRY_STAGE: "$(IMAGE_REGISTRY_PRODUCTION)"
+  IMAGE_STAGE: "$(IMAGE_REGISTRY_STAGE)$(IMAGE_PATH_STAGE)"
+  KUBERNETES_API_URL_STAGE: "kubernetes-api.dev.example.org"
+  REPLICAS_STAGE: 2
+
+  # Test
+  HOST_TEST: "blazor-test.example.org"
+  IMAGE_PATH_TEST: "$[format(variables['_IMAGE_PATH_FORMAT'], 'test-')]"
+  IMAGE_REGISTRY_TEST: "$(IMAGE_REGISTRY_STAGE)"
+  IMAGE_TEST: "$(IMAGE_REGISTRY_TEST)$(IMAGE_PATH_TEST)"
+  KUBERNETES_API_URL_TEST: "$(KUBERNETES_API_URL_STAGE)"
+  REPLICAS_TEST: 1
+
+  TRANSFORM_BASE_DIRECTORY: "$(Pipeline.Workspace)/Transform"

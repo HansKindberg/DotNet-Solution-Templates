@@ -1,0 +1,11 @@
+{
+	"classifications": [
+		"AspNetCore",
+		"Razor",
+		"Solution",
+		"Web"
+	],
+	"identity": "HK-AspNet-Razor-Small",
+	"name": "HK-AspNet-Razor-Small",
+	"shortName": "hk-aspnet-razor-s"
+}

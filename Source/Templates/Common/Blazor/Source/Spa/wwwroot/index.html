@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Blazor</title>
+		<base href="/" />
+		<link href="Style/Site.css" rel="stylesheet" />
+	</head>
+	<body>
+		<main class="container-sm" id="app">
+			<div class="text-center">
+				<div class="spinner-border text-dark mb-5 mt-5" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+				<p class="alert alert-info">Loading...</p>
+			</div>
+		</main>
+		<div class="container-sm text-center" id="blazor-error-ui" style="display: none;">
+			<div class="alert alert-danger d-inline-block text-start w-50">
+				<h1>Error</h1>
+				<span>An unhandled error has occurred.</span>
+			</div>
+		</div>
+		<script src="Scripts/Site.js"></script>
+		<script src="_framework/blazor.webassembly.js"></script>
+	</body>
+</html>

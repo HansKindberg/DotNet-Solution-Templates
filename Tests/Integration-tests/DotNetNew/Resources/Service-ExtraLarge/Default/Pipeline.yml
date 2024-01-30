@@ -1,0 +1,55 @@
+trigger:
+  branches:
+    exclude:
+    - "*"
+    # include:
+    # - "*"
+
+pool:
+  name: "Linux" # Run on a Linux agent.
+
+parameters:
+- name: "Environment"
+  default: " - not selected - "
+  displayName: "Environment (if not selected the branch decides which environments to deploy)"
+  type: string
+  values:
+  - " - not selected - "
+  - "Stage"
+  - "Stage & production" # Maybe this could be called "Production". It is named "Stage & production" because it will always trigger "Stage" first.
+  - "Test"
+
+variables:
+  PRODUCTION_DEPLOYMENT: $[or(eq('${{ parameters.Environment }}', 'Stage & production'), and(eq('${{ parameters.Environment }}', ' - not selected - '), eq(variables['Build.SourceBranchName'], 'main')))]
+  STAGE_DEPLOYMENT: $[or(or(eq('${{ parameters.Environment }}', 'Stage'), eq('${{ parameters.Environment }}', 'Stage & production')), and(eq('${{ parameters.Environment }}', ' - not selected - '), eq(variables['Build.SourceBranchName'], 'main')))]
+  TEST_DEPLOYMENT: $[or(eq('${{ parameters.Environment }}', 'Test'), and(eq('${{ parameters.Environment }}', ' - not selected - '), eq(variables['Build.SourceBranchName'], 'Development')))]
+
+stages:
+- stage: "Build"
+  displayName: "Build"
+  jobs:
+  - template: "Build.yml"
+- stage: "Test"
+  condition: and(succeeded(), eq(variables['TEST_DEPLOYMENT'], true))
+  dependsOn: "Build"
+  displayName: "Deploy to test"
+  jobs:
+  - template: "Deploy.yml"
+    parameters:
+      Environment: "Test"
+- stage: "Stage"
+  condition: and(succeeded(), eq(variables['STAGE_DEPLOYMENT'], true))
+  dependsOn: "Build"
+  displayName: "Deploy to stage"
+  jobs:
+  - template: "Deploy.yml"
+    parameters:
+      Environment: "Stage"
+- stage: "Production" # Tip: Add "Approvals and checks" for the production environment.
+  condition: and(succeeded(), eq(variables['PRODUCTION_DEPLOYMENT'], true))
+  dependsOn: "Stage"
+  displayName: "Deploy to production"
+  jobs:
+  - template: "Deploy.yml"
+    parameters:
+      Environment: "Production"

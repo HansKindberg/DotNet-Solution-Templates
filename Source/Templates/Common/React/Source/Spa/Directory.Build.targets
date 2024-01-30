@@ -1,0 +1,2 @@
+<!-- To ignore the global Directory.Build.targets as this is a esproj. -->
+<Project />

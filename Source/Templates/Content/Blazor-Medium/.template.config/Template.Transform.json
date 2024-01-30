@@ -1,0 +1,12 @@
+{
+	"classifications": [
+		"Blazor",
+		"Project",
+		"Solution",
+		"Spa",
+		"Web"
+	],
+	"identity": "HK-Blazor-Medium",
+	"name": "HK-Blazor-Medium",
+	"shortName": "hk-blazor-m"
+}

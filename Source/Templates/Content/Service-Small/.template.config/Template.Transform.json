@@ -1,0 +1,11 @@
+{
+	"classifications": [
+		"Api",
+		"Project",
+		"Service",
+		"Solution"
+	],
+	"identity": "HK-Service-Small",
+	"name": "HK-Service-Small",
+	"shortName": "hk-service-s"
+}

@@ -1,0 +1,9 @@
+
+        - script: |
+            # Seems like the Blazor appsettings can't be handled with config-map. Have tested it without success.
+            # Instead we replace the Blazor appsettings.json in the source, with the transformed one from the previous step.
+            echo "Replacing Spa/wwwroot/appsettings.json ..."
+            cp "$(TRANSFORM_DIRECTORY)/Spa/wwwroot/appsettings.json" "Source/Spa/wwwroot/appsettings.json" -v
+            echo "Replaced Spa/wwwroot/appsettings.json."
+          displayName: "Replace Spa/wwwroot/appsettings.json"
+          failOnStderr: true

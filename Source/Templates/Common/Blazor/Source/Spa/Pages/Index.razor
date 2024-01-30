@@ -1,0 +1,58 @@
+@page "/"
+
+<h1>Home</h1>
+<h2>Bff api</h2>
+<div class="mb-1">
+	<button class="btn btn-outline-dark" @onclick="GetBffData">Get</button>
+</div>
+@if(BffData != null)
+{
+	<div class="alert alert-info">
+		<h3>Result</h3>
+		<p>@BffData</p>
+	</div>
+}
+else if(BffApiError != null)
+{
+	<div class="alert alert-danger">
+		<h3>Error</h3>
+		<p>@BffApiError</p>
+	</div>
+}
+<h2>Public api</h2>
+<div class="mb-1">
+	<button class="btn btn-outline-dark" @onclick="GetPublicData">Get</button>
+</div>
+@if(PublicData != null)
+{
+	<div class="alert alert-info">
+		<h3>Result</h3>
+		<p>
+			<code>
+				@PublicData
+			</code>
+		</p>
+	</div>
+}
+else if(PublicApiError != null)
+{
+	<div class="alert alert-danger">
+		<h3>Error</h3>
+		<p>@PublicApiError</p>
+	</div>
+}
+<h2>Bootstrap accordion</h2>
+<div class="accordion" id="accordion-example">
+	<div class="accordion-item">
+		<h2 class="accordion-header">
+			<button aria-controls="accordion-item-body-1" aria-expanded="false" class="accordion-button collapsed" data-bs-target="#accordion-item-body-1" data-bs-toggle="collapse" type="button">
+				Accordion Item #1
+			</button>
+		</h2>
+		<div class="accordion-collapse collapse" data-bs-parent="#accordion-example" id="accordion-item-body-1">
+			<div class="accordion-body">
+				<strong>Accordion Item #1</strong> This is the first item's accordion body.
+			</div>
+		</div>
+	</div>
+</div>

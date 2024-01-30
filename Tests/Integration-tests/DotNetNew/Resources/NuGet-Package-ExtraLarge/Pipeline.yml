@@ -1,0 +1,35 @@
+trigger:
+  branches:
+    exclude:
+    - "*"
+    # include:
+    # - "*"
+
+pool:
+  name: "Windows" # Run on a Windows agent. At the moment we need to push from a Windows-agent because the system-account has access to the NuGet-server with Windows authentication. This does not work on Linux-agents. We may get it to work, not sure.
+
+variables:
+  PRODUCTION_DEPLOYMENT: $[eq(variables['Build.SourceBranchName'], 'main')]
+  TEST_DEPLOYMENT: $[eq(variables['Build.SourceBranchName'], 'Development')]
+
+stages:
+- stage: "Build"
+  displayName: "Build"
+  jobs:
+  - template: "Build.yml"
+- stage: "Test"
+  condition: and(succeeded(), eq(variables['TEST_DEPLOYMENT'], true))
+  dependsOn: "Build"
+  displayName: "Deploy to test"
+  jobs:
+  - template: "Deploy.yml"
+    parameters:
+      Environment: "Test"
+- stage: "Production" # Tip: Add "Approvals and checks" for the production environment.
+  condition: and(succeeded(), eq(variables['PRODUCTION_DEPLOYMENT'], true))
+  dependsOn: "Build"
+  displayName: "Deploy to production"
+  jobs:
+  - template: "Deploy.yml"
+    parameters:
+      Environment: "Production"

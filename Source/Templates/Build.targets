@@ -1,0 +1,286 @@
+<Project>
+	<!-- https://learn.microsoft.com/en-us/visualstudio/msbuild/walkthrough-creating-an-inline-task?view=vs-2022 -->
+	<UsingTask
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
+		TaskFactory="CodeTaskFactory"
+		TaskName="AppendTextToFile"
+	>
+		<ParameterGroup>
+			<DestinationFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
+			<SourceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+					var text = string.Empty;
+
+		            foreach(var sourceFile in SourceFiles)
+		            {
+		                text += System.IO.File.ReadAllText(sourceFile.GetMetadata("Identity"));
+		            }
+
+		            foreach(var destinationFile in DestinationFiles)
+		            {
+		                System.IO.File.AppendAllText(destinationFile.GetMetadata("Identity"), text);
+		            }
+				]]>
+			</Code>
+		</Task>
+	</UsingTask>
+	<UsingTask
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
+		TaskFactory="CodeTaskFactory"
+		TaskName="Replace"
+	>
+		<ParameterGroup>
+			<DestinationFile ParameterType="System.String" Required="True" />
+			<Replacements ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
+			<SourceFile ParameterType="System.String" Required="True" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+					var text = System.IO.File.ReadAllText(SourceFile);
+
+					foreach(var replacement in Replacements)
+					{
+						text = text.Replace(replacement.GetMetadata("Identity"), replacement.GetMetadata("Value"));
+					}
+
+					System.IO.File.WriteAllText(DestinationFile, text);
+				]]>
+			</Code>
+		</Task>
+	</UsingTask>
+	<UsingTask
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
+		TaskFactory="CodeTaskFactory"
+		TaskName="Wait"
+	>
+		<ParameterGroup>
+			<Seconds ParameterType="System.Byte" Required="True" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+					System.Threading.Thread.Sleep(System.TimeSpan.FromSeconds(Seconds));
+				]]>
+			</Code>
+		</Task>
+	</UsingTask>
+	<Target Name="Prepare">
+		<Message Importance="high" Text="Prepare..." />
+
+		<!-- Replace -->
+		<!-- Replace - Deploy.yml -->
+		<ItemGroup>
+			<AspNetRazorExtraLargeDeployReplacement Include="[$ADDITIONAL_ARTIFACT_SCRIPTS$]">
+				<Value></Value>
+			</AspNetRazorExtraLargeDeployReplacement>
+			<AspNetRazorExtraLargeDeployReplacement Include="[$ADDITIONAL_TRANSFORM_STEP$]">
+				<Value></Value>
+			</AspNetRazorExtraLargeDeployReplacement>
+			<AspNetRazorExtraLargeDeployReplacement Include="[$PROJECT_DIRECTORY_NAME$]">
+				<Value>Application</Value>
+			</AspNetRazorExtraLargeDeployReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/AspNet-Razor-ExtraLarge/Deploy.yml" Replacements="@(AspNetRazorExtraLargeDeployReplacement)" SourceFile="Common/Replace/Kubernetes/Deploy.yml" />
+		<ItemGroup>
+			<BlazorExtraLargeDeployReplacement Include="[$ADDITIONAL_ARTIFACT_SCRIPTS$]">
+				<Value>$([System.IO.File]::ReadAllText("Common/Replace/Kubernetes/Parts/Blazor/Deploy.Additional-Artifact-Scripts.yml"))</Value>
+			</BlazorExtraLargeDeployReplacement>
+			<BlazorExtraLargeDeployReplacement Include="[$ADDITIONAL_TRANSFORM_STEP$]">
+				<Value>$([System.IO.File]::ReadAllText("Common/Replace/Kubernetes/Parts/Blazor/Deploy.Additional-Transform-Step.yml"))</Value>
+			</BlazorExtraLargeDeployReplacement>
+			<BlazorExtraLargeDeployReplacement Include="[$PROJECT_DIRECTORY_NAME$]">
+				<Value>Bff</Value>
+			</BlazorExtraLargeDeployReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/Blazor-ExtraLarge/Deploy.yml" Replacements="@(BlazorExtraLargeDeployReplacement)" SourceFile="Common/Replace/Kubernetes/Deploy.yml" />
+		<ItemGroup>
+			<ReactExtraLargeDeployReplacement Include="[$ADDITIONAL_ARTIFACT_SCRIPTS$]">
+				<Value></Value>
+			</ReactExtraLargeDeployReplacement>
+			<ReactExtraLargeDeployReplacement Include="[$ADDITIONAL_TRANSFORM_STEP$]">
+				<Value></Value>
+			</ReactExtraLargeDeployReplacement>
+			<ReactExtraLargeDeployReplacement Include="[$PROJECT_DIRECTORY_NAME$]">
+				<Value>Bff</Value>
+			</ReactExtraLargeDeployReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/React-ExtraLarge/Deploy.yml" Replacements="@(ReactExtraLargeDeployReplacement)" SourceFile="Common/Replace/Kubernetes/Deploy.yml" />
+		<ItemGroup>
+			<ServiceExtraLargeDeployReplacement Include="[$ADDITIONAL_ARTIFACT_SCRIPTS$]">
+				<Value></Value>
+			</ServiceExtraLargeDeployReplacement>
+			<ServiceExtraLargeDeployReplacement Include="[$ADDITIONAL_TRANSFORM_STEP$]">
+				<Value></Value>
+			</ServiceExtraLargeDeployReplacement>
+			<ServiceExtraLargeDeployReplacement Include="[$PROJECT_DIRECTORY_NAME$]">
+				<Value>Service</Value>
+			</ServiceExtraLargeDeployReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/Service-ExtraLarge/Deploy.yml" Replacements="@(ServiceExtraLargeDeployReplacement)" SourceFile="Common/Replace/Kubernetes/Deploy.yml" />
+
+		<!-- Replace - Variables.yml -->
+		<ItemGroup>
+			<AspNetRazorExtraLargeVariablesReplacement Include="[$IMAGE_NAME$]">
+				<Value>aspnet-razor</Value>
+			</AspNetRazorExtraLargeVariablesReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/AspNet-Razor-ExtraLarge/Variables.yml" Replacements="@(AspNetRazorExtraLargeVariablesReplacement)" SourceFile="Common/Replace/Kubernetes/Variables.yml" />
+		<ItemGroup>
+			<BlazorExtraLargeVariablesReplacement Include="[$IMAGE_NAME$]">
+				<Value>blazor</Value>
+			</BlazorExtraLargeVariablesReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/Blazor-ExtraLarge/Variables.yml" Replacements="@(BlazorExtraLargeVariablesReplacement)" SourceFile="Common/Replace/Kubernetes/Variables.yml" />
+		<ItemGroup>
+			<ReactExtraLargeVariablesReplacement Include="[$IMAGE_NAME$]">
+				<Value>react</Value>
+			</ReactExtraLargeVariablesReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/React-ExtraLarge/Variables.yml" Replacements="@(ReactExtraLargeVariablesReplacement)" SourceFile="Common/Replace/Kubernetes/Variables.yml" />
+		<ItemGroup>
+			<ServiceExtraLargeVariablesReplacement Include="[$IMAGE_NAME$]">
+				<Value>service</Value>
+			</ServiceExtraLargeVariablesReplacement>
+		</ItemGroup>
+		<Replace DestinationFile="Content/Service-ExtraLarge/Variables.yml" Replacements="@(ServiceExtraLargeVariablesReplacement)" SourceFile="Common/Replace/Kubernetes/Variables.yml" />
+
+		<!-- Tests -->
+		<ItemGroup>
+			<TestFile Include="Common/Tests/Basics/**/*" />
+			<TestFile Include="Common/Tests/Normal/**/*" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/AspNet-Razor-ExtraLarge/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/AspNet-Razor-Large/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/AspNet-Razor-Medium/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/NuGet-Package-ExtraLarge/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/NuGet-Package-Large/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/NuGet-Package-Medium/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/React-ExtraLarge/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/React-Large/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/React-Medium/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/Service-ExtraLarge/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/Service-Large/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+		<Copy DestinationFolder="Content/Service-Medium/Tests/%(RecursiveDir)" SourceFiles="@(TestFile)" />
+
+		<!-- Blazor Tests -->
+		<ItemGroup>
+			<BlazorTestFile Include="Common/Tests/Basics/**/*" />
+			<BlazorTestFile Include="Common/Tests/Blazor/**/*" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/Blazor-ExtraLarge/Tests/%(RecursiveDir)" SourceFiles="@(BlazorTestFile)" />
+		<Copy DestinationFolder="Content/Blazor-Large/Tests/%(RecursiveDir)" SourceFiles="@(BlazorTestFile)" />
+		<Copy DestinationFolder="Content/Blazor-Medium/Tests/%(RecursiveDir)" SourceFiles="@(BlazorTestFile)" />
+
+		<!-- All -->
+		<ItemGroup>
+			<AllFile Include="Common/All/**/*" />
+		</ItemGroup>
+
+		<!-- Kubernetes (ExtraLarge) -->
+		<ItemGroup>
+			<KubernetesFile Include="Common/Kubernetes/**/*" />
+		</ItemGroup>
+
+		<!-- AspNet-Razor -->
+		<ItemGroup>
+			<AspNetRazorFile Include="@(AllFile)" />
+			<AspNetRazorFile Include="Common/AspNet-Razor/**/*" Exclude="Common/AspNet-Razor/Source/Application/Application.csproj" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/AspNet-Razor-ExtraLarge/%(RecursiveDir)" SourceFiles="@(AspNetRazorFile);@(KubernetesFile)" />
+		<Copy DestinationFolder="Content/AspNet-Razor-Large/%(RecursiveDir)" SourceFiles="@(AspNetRazorFile)" />
+		<Copy DestinationFolder="Content/AspNet-Razor-Medium/%(RecursiveDir)" SourceFiles="@(AspNetRazorFile)" />
+		<Copy DestinationFolder="Content/AspNet-Razor-Small/%(RecursiveDir)" SourceFiles="@(AspNetRazorFile)" />
+
+		<!-- Blazor -->
+		<ItemGroup>
+			<BlazorFile Include="@(AllFile)" />
+			<BlazorFile Include="Common/Blazor/**/*" Exclude="Common/Blazor/Source/*/*.csproj" />
+			<BlazorFile Include="Common/Bff/**/*" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/Blazor-ExtraLarge/%(RecursiveDir)" SourceFiles="@(BlazorFile);@(KubernetesFile)" />
+		<Copy DestinationFolder="Content/Blazor-Large/%(RecursiveDir)" SourceFiles="@(BlazorFile)" />
+		<Copy DestinationFolder="Content/Blazor-Medium/%(RecursiveDir)" SourceFiles="@(BlazorFile)" />
+		<Copy DestinationFolder="Content/Blazor-Small/%(RecursiveDir)" SourceFiles="@(BlazorFile)" />
+
+		<!-- Blazor-Duende -->
+		<ItemGroup>
+			<!--<BlazorDuendeFile Include="@(AllFile)" />-->
+			<BlazorDuendeFile Include="Common/Blazor-Duende/**/*" />
+			<BlazorDuendeExtraLargeFile Include="Content/Blazor-ExtraLarge/**/*" Exclude="Content/Blazor-ExtraLarge/.template.config/Template.Transform.json;Content/Blazor-ExtraLarge/Source/Bff/Models/**/*;Content/Blazor-ExtraLarge/Source/Bff/Bff.csproj;Content/Blazor-ExtraLarge/Source/Bff/Program.cs" />
+			<BlazorDuendeLargeFile Include="Content/Blazor-Large/**/*" Exclude="Content/Blazor-Large/.template.config/Template.Transform.json;Content/Blazor-Large/Source/Bff/Models/**/*;Content/Blazor-Large/Source/Bff/Bff.csproj;Content/Blazor-Large/Source/Bff/Program.cs" />
+			<BlazorDuendeMediumFile Include="Content/Blazor-Medium/**/*" Exclude="Content/Blazor-Medium/.template.config/Template.Transform.json;Content/Blazor-Medium/Source/Bff/Models/**/*;Content/Blazor-Medium/Source/Bff/Bff.csproj;Content/Blazor-Medium/Source/Bff/Program.cs" />
+			<BlazorDuendeSmallFile Include="Content/Blazor-Small/**/*" Exclude="Content/Blazor-Small/.template.config/Template.Transform.json;Content/Blazor-Small/Source/Bff/Models/**/*;Content/Blazor-Small/Source/Bff/Bff.csproj;Content/Blazor-Small/Source/Bff/Program.cs" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/Blazor-Duende-ExtraLarge/%(RecursiveDir)" SourceFiles="@(BlazorDuendeExtraLargeFile);@(BlazorDuendeFile)" />
+		<Copy DestinationFolder="Content/Blazor-Duende-Large/%(RecursiveDir)" SourceFiles="@(BlazorDuendeLargeFile);@(BlazorDuendeFile)" />
+		<Copy DestinationFolder="Content/Blazor-Duende-Medium/%(RecursiveDir)" SourceFiles="@(BlazorDuendeMediumFile);@(BlazorDuendeFile)" />
+		<Copy DestinationFolder="Content/Blazor-Duende-Small/%(RecursiveDir)" SourceFiles="@(BlazorDuendeSmallFile);@(BlazorDuendeFile)" />
+
+		<!-- NuGet-Package -->
+		<ItemGroup>
+			<NuGetPackageFile Include="@(AllFile)" />
+			<NuGetPackageFile Include="Common/NuGet-Package/**/*" Exclude="Common/NuGet-Package/Source/Project/Project.csproj" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/NuGet-Package-ExtraLarge/%(RecursiveDir)" SourceFiles="@(NuGetPackageFile)" />
+		<Copy DestinationFolder="Content/NuGet-Package-Large/%(RecursiveDir)" SourceFiles="@(NuGetPackageFile)" />
+		<Copy DestinationFolder="Content/NuGet-Package-Medium/%(RecursiveDir)" SourceFiles="@(NuGetPackageFile)" />
+		<Copy DestinationFolder="Content/NuGet-Package-Small/%(RecursiveDir)" SourceFiles="@(NuGetPackageFile)" />
+
+		<!-- React -->
+		<ItemGroup>
+			<ReactFile Include="@(AllFile)" />
+			<ReactFile Include="Common/React/**/*" Exclude="Common/React/Source/Bff/Bff.csproj" />
+			<ReactFile Include="Common/Bff/**/*" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/React-ExtraLarge/%(RecursiveDir)" SourceFiles="@(ReactFile);@(KubernetesFile)" />
+		<Copy DestinationFolder="Content/React-Large/%(RecursiveDir)" SourceFiles="@(ReactFile)" />
+		<Copy DestinationFolder="Content/React-Medium/%(RecursiveDir)" SourceFiles="@(ReactFile)" />
+		<Copy DestinationFolder="Content/React-Small/%(RecursiveDir)" SourceFiles="@(ReactFile)" />
+
+		<!-- React-Duende -->
+		<ItemGroup>
+			<!--<ReactDuendeFile Include="@(AllFile)" />-->
+			<ReactDuendeFile Include="Common/React-Duende/**/*" />
+			<ReactDuendeExtraLargeFile Include="Content/React-ExtraLarge/**/*" Exclude="Content/React-ExtraLarge/.template.config/Template.Transform.json;Content/React-ExtraLarge/Source/Bff/Models/**/*;Content/React-ExtraLarge/Source/Bff/Bff.csproj;Content/React-ExtraLarge/Source/Bff/Program.cs" />
+			<ReactDuendeLargeFile Include="Content/React-Large/**/*" Exclude="Content/React-Large/.template.config/Template.Transform.json;Content/React-Large/Source/Bff/Models/**/*;Content/React-Large/Source/Bff/Bff.csproj;Content/React-Large/Source/Bff/Program.cs" />
+			<ReactDuendeMediumFile Include="Content/React-Medium/**/*" Exclude="Content/React-Medium/.template.config/Template.Transform.json;Content/React-Medium/Source/Bff/Models/**/*;Content/React-Medium/Source/Bff/Bff.csproj;Content/React-Medium/Source/Bff/Program.cs" />
+			<ReactDuendeSmallFile Include="Content/React-Small/**/*" Exclude="Content/React-Small/.template.config/Template.Transform.json;Content/React-Small/Source/Bff/Models/**/*;Content/React-Small/Source/Bff/Bff.csproj;Content/React-Small/Source/Bff/Program.cs" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/React-Duende-ExtraLarge/%(RecursiveDir)" SourceFiles="@(ReactDuendeExtraLargeFile);@(ReactDuendeFile)" />
+		<Copy DestinationFolder="Content/React-Duende-Large/%(RecursiveDir)" SourceFiles="@(ReactDuendeLargeFile);@(ReactDuendeFile)" />
+		<Copy DestinationFolder="Content/React-Duende-Medium/%(RecursiveDir)" SourceFiles="@(ReactDuendeMediumFile);@(ReactDuendeFile)" />
+		<Copy DestinationFolder="Content/React-Duende-Small/%(RecursiveDir)" SourceFiles="@(ReactDuendeSmallFile);@(ReactDuendeFile)" />
+
+		<!-- Service -->
+		<ItemGroup>
+			<ServiceFile Include="@(AllFile)" />
+			<ServiceFile Include="Common/Service/**/*" Exclude="Common/Service/Source/Service/Service.csproj" />
+		</ItemGroup>
+		<Copy DestinationFolder="Content/Service-ExtraLarge/%(RecursiveDir)" SourceFiles="@(ServiceFile);@(KubernetesFile)" />
+		<Copy DestinationFolder="Content/Service-Large/%(RecursiveDir)" SourceFiles="@(ServiceFile)" />
+		<Copy DestinationFolder="Content/Service-Medium/%(RecursiveDir)" SourceFiles="@(ServiceFile)" />
+		<Copy DestinationFolder="Content/Service-Small/%(RecursiveDir)" SourceFiles="@(ServiceFile)" />
+
+		<!-- Append -->
+		<ItemGroup>
+			<AppendKubernetesReadMeDestinationFile Include="Content/*-ExtraLarge/ReadMe.md" Exclude="Content/NuGet-Package-ExtraLarge/ReadMe.md" />
+			<AppendKubernetesReadMeSourceFile Include="Common/Append/Kubernetes/ReadMe.md" />
+		</ItemGroup>
+		<AppendTextToFile DestinationFiles="@(AppendKubernetesReadMeDestinationFile)" SourceFiles="@(AppendKubernetesReadMeSourceFile)" />
+
+		<!-- Wait - we wait so the copying of files have time to finnish -->
+		<Wait Seconds="2" />
+	</Target>
+	<Target Name="Transform" BeforeTargets="Compile" DependsOnTargets="Prepare">
+		<Message Importance="high" Text="Transform..." />
+		<ItemGroup>
+			<TemplateTransformFile Include="Content/*/.template.config/Template.Transform.json" />
+		</ItemGroup>
+		<TransformTask Destination="Content/%(TemplateTransformFile.RecursiveDir)template.json" Source="Content/%(TemplateTransformFile.RecursiveDir)Template.Source.json" Transform="Content/%(TemplateTransformFile.RecursiveDir)Template.Transform-Common.json" />
+		<TransformTask Destination="Content/%(TemplateTransformFile.RecursiveDir)template.json" Source="Content/%(TemplateTransformFile.RecursiveDir)template.json" Transform="Content/%(TemplateTransformFile.RecursiveDir)Template.Transform.json" />
+	</Target>
+</Project>

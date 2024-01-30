@@ -1,0 +1,34 @@
+variables:
+  # Requires the following pipeline secrets:
+  # IMAGE_REGISTRY_TOKEN
+  # KUBERNETES_RESOURCES_REPOSITORY_TOKEN
+
+  _GIT_HASH: ${BUILD_SOURCEVERSION:0:8} # Only works on a Linux build-agent, not on a Windows build-agent.
+  _IMAGE_PATH_FORMAT: "/example-organization/service:{0}$(_GIT_HASH)"
+
+  KUBERNETES_RESOURCES_REPOSITORY_BASE_DIRECTORY: "$(Pipeline.Workspace)/Kubernetes"
+  KUBERNETES_RESOURCES_REPOSITORY_URI_FORMAT: "https://{0}@example.org/Organization/Kubernetes-Resources.git" # The "{0}" placeholder is for the token.
+  KUBERNETES_TEMPLATE_FILE: "$(Build.SourcesDirectory)/.kubernetes/Template.yml" # Path to the Kubernetes template file.
+
+  # Production
+  HOST_PRODUCTION: "service.example.org"
+  IMAGE_PATH_PRODUCTION: "$[format(variables['_IMAGE_PATH_FORMAT'], '')]"
+  IMAGE_REGISTRY_PRODUCTION: "docker.io"
+  IMAGE_PRODUCTION: "$(IMAGE_REGISTRY_PRODUCTION)$(IMAGE_PATH_PRODUCTION)"
+  REPLICAS_PRODUCTION: 2 # REPLICAS - the number of nodes for the load-balancing
+
+  # Stage
+  HOST_STAGE: "service-stage.example.org"
+  IMAGE_PATH_STAGE: "$[format(variables['_IMAGE_PATH_FORMAT'], 'stage-')]"
+  IMAGE_REGISTRY_STAGE: "$(IMAGE_REGISTRY_PRODUCTION)"
+  IMAGE_STAGE: "$(IMAGE_REGISTRY_STAGE)$(IMAGE_PATH_STAGE)"
+  REPLICAS_STAGE: 2
+
+  # Test
+  HOST_TEST: "service-test.example.org"
+  IMAGE_PATH_TEST: "$[format(variables['_IMAGE_PATH_FORMAT'], 'test-')]"
+  IMAGE_REGISTRY_TEST: "$(IMAGE_REGISTRY_STAGE)"
+  IMAGE_TEST: "$(IMAGE_REGISTRY_TEST)$(IMAGE_PATH_TEST)"
+  REPLICAS_TEST: 1
+
+  TRANSFORM_BASE_DIRECTORY: "$(Pipeline.Workspace)/Transform"

@@ -1,0 +1,22 @@
+{
+	// Symbols:
+	// - https://github.com/dotnet/templating/wiki/Reference-for-template.json#symbols
+	// - https://github.com/dotnet/templating/wiki/Conditional-processing-and-comment-syntax
+	// - Sample (xml-file, md-file): https://github.com/dotnet/templating/blob/main/test/Microsoft.TemplateEngine.TestTemplates/test_templates/TemplateConditionalProcessing/Test.xml
+	// - Sample (yml-file): https://github.com/dotnet/templating/blob/main/test/Microsoft.TemplateEngine.TestTemplates/test_templates/TemplateConditionalProcessing/Test.yml
+	// - Sample (other files): https://github.com/dotnet/templating/blob/main/test/Microsoft.TemplateEngine.TestTemplates/test_templates/TemplateConditionalProcessing/Test.othertype
+	"symbols": {
+		"directTemplateProcessing": {
+			"dataType": "bool",
+			"defaultValue": "false",
+			"description": "If the Kubernetes template should be processed directly to Kubernetes or not. If false, default, the Kubernetes template is processed and checked in to a git-repository and from there handled by Argo CD. If true the Kubernetes template is processed directly to the Kubernetes kluster.",
+			"type": "parameter"
+		},
+		"kubernetesImageRegistry": {
+			"dataType": "bool",
+			"defaultValue": "false",
+			"description": "If the internal Kubernetes image-registry should be used or not. If false, default, an external image-registry should be used, eg. https://hub.docker.com. If true the internal Kubernetes image-registry should be used.",
+			"type": "parameter"
+		}
+	}
+}
