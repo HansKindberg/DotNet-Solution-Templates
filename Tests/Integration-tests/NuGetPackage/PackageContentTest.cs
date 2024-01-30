@@ -233,7 +233,7 @@ namespace IntegrationTests.NuGetPackage
 			using(var packageArchiveReader = new PackageArchiveReader(Global.NuGetPackageFile.FullName))
 			{
 				var nuspecReader = packageArchiveReader.NuspecReader;
-				Assert.Equal("Hans Kindberg", nuspecReader.GetAuthors());
+				Assert.Equal("Hans Kindberg - open source", nuspecReader.GetAuthors());
 				Assert.Equal("A template-package for creating solutions, with one or more projects, in dotnet / Visual Studio.", nuspecReader.GetDescription());
 				Assert.Equal(Global.NuGetPackageName, nuspecReader.GetId());
 				Assert.Equal(Global.NuGetPackageVersion, nuspecReader.GetVersion().OriginalVersion);
