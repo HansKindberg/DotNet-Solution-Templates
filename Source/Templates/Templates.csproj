@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<AssemblyName>HansKindberg-DotNet-Solution-Templates</AssemblyName>
-		<Authors>Hans Kindberg</Authors>
+		<Authors>Hans Kindberg - open source</Authors>
 		<ContentTargetFolders>content</ContentTargetFolders>
 		<Description>A template-package for creating solutions, with one or more projects, in dotnet / Visual Studio.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
