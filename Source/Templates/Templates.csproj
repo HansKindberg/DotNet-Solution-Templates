@@ -18,6 +18,7 @@
 		<NoDefaultExcludes>true</NoDefaultExcludes>
 		<NoWarn>$(NoWarn);NU5128</NoWarn>
 		<PackageId>$(AssemblyName)</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/HansKindberg/DotNet-Solution-Templates</PackageProjectUrl>
 		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
 		<PackageTags>DotNet multi-project multi-project-templates solution solution-templates Templates</PackageTags>
