@@ -2,7 +2,7 @@
 	<!-- https://learn.microsoft.com/en-us/visualstudio/msbuild/walkthrough-creating-an-inline-task?view=vs-2022 -->
 	<UsingTask
 		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
-		TaskFactory="CodeTaskFactory"
+		TaskFactory="RoslynCodeTaskFactory"
 		TaskName="AppendTextToFile"
 	>
 		<ParameterGroup>
@@ -29,7 +29,7 @@
 	</UsingTask>
 	<UsingTask
 		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
-		TaskFactory="CodeTaskFactory"
+		TaskFactory="RoslynCodeTaskFactory"
 		TaskName="Replace"
 	>
 		<ParameterGroup>
@@ -54,7 +54,7 @@
 	</UsingTask>
 	<UsingTask
 		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
-		TaskFactory="CodeTaskFactory"
+		TaskFactory="RoslynCodeTaskFactory"
 		TaskName="Wait"
 	>
 		<ParameterGroup>
