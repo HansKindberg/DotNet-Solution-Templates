@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Bff.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -11,7 +10,7 @@ namespace Bff.Pages
 	{
 		#region Properties
 
-		protected internal virtual ILogger Logger { get; } = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger(typeof(ExampleController));
+		protected internal virtual ILogger Logger { get; } = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger(typeof(ErrorModel));
 		public string? RequestId { get; set; }
 		public bool ShowRequestId => !string.IsNullOrEmpty(this.RequestId);
 
