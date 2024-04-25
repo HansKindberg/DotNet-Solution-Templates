@@ -19,7 +19,6 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Application.csproj" -c $BUILD_CONFIGURATION -o /app/publish -p:NpmBuild=false;UseAppHost=false
 
 FROM base AS final
-ARG DEBCONF_NOWARNINGS="yes" # To avoid warnings so we can use "failOnStderr: true" in our script task.
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Application.dll"]

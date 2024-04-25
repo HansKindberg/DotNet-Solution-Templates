@@ -5,7 +5,6 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-ARG DEBCONF_NOWARNINGS="yes" # To avoid warnings so we can use "failOnStderr: true" in our script task.
 WORKDIR /src
 COPY [".editorconfig", "."]
 COPY ["Directory.Build.props", "."]
@@ -21,11 +20,9 @@ RUN dotnet build "./Bff.csproj" -c $BUILD_CONFIGURATION -o /app/build -p:NpmBuil
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-ARG DEBCONF_NOWARNINGS="yes" # To avoid warnings so we can use "failOnStderr: true" in our script task.
 RUN dotnet publish "./Bff.csproj" -c $BUILD_CONFIGURATION -o /app/publish -p:NpmBuild=false;UseAppHost=false
 
 FROM base AS final
-ARG DEBCONF_NOWARNINGS="yes" # To avoid warnings so we can use "failOnStderr: true" in our script task.
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Bff.dll"]
