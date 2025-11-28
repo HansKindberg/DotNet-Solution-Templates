@@ -12,7 +12,7 @@ jobs:
   variables:
   - template: "Variables.yml"
   - name: NUGET_FEED_URL
-    value: "${{ variables[format('NUGET_{0}_FEED_URL', upper(parameters.Environment))] }}"
+    value: "${{ variables[format('NUGET_FEED_URL_{0}', upper(parameters.Environment))] }}"
   strategy:
     runOnce:
       deploy:
@@ -21,15 +21,28 @@ jobs:
         - script: |
             echo "NUGET_FEED_URL = $(NUGET_FEED_URL)"
           displayName: "Information"
+        - task: UseDotNet@2
+          displayName: "Use .NET Core sdk 10.0 (we need it for the 'dotnet nuget ...' commands)"
+          inputs:
+            version: 10.0.x
         - task: DownloadBuildArtifacts@0
           displayName: "Download artifacts"
           inputs:
             artifactName: "$(ARTIFACT_NAME)"
             buildType: "current"
             downloadPath: "$(Build.ArtifactStagingDirectory)"
-        - task: DotNetCoreCLI@2
+        # We want the task to fail if the same version already exists in the NuGet-repository. If we don't want it to fail, we can add the --skip-duplicate flag to the 'dotnet nuget push ...' command.
+        # Eg:
+        #   echo "dotnet nuget push '$(Build.ArtifactStagingDirectory)/**/*.nupkg' --api-key '$NUGET_FEED_API_KEY' --skip-duplicate --source '$(NUGET_FEED_URL)'"
+        #   dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" --api-key "$NUGET_FEED_API_KEY" --skip-duplicate --source "$(NUGET_FEED_URL)"
+        - script: |
+            echo "dotnet nuget push '$(Build.ArtifactStagingDirectory)/**/*.nupkg' --api-key '$NUGET_FEED_API_KEY' --source '$(NUGET_FEED_URL)'"
+            dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" --api-key "$NUGET_FEED_API_KEY" --source "$(NUGET_FEED_URL)"
           displayName: "NuGet push"
-          inputs:
-            arguments: "push $(Build.ArtifactStagingDirectory)/**/*.nupkg -s $(NUGET_FEED_URL)"
-            command: custom
-            custom: nuget
+          env:
+            # Set secret variables - Use a secret variable in the UI: https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables?view=azure-devops&tabs=yaml%2Cbash#use-a-secret-variable-in-the-ui
+            # Expressions - Conditionally assign a variable: https://learn.microsoft.com/en-us/azure/devops/pipelines/process/expressions?view=azure-devops#conditionally-assign-a-variable
+            ${{ if eq(parameters.Environment, 'Production') }}:
+              NUGET_FEED_API_KEY: $(NUGET_FEED_API_KEY_PRODUCTION)
+            ${{ if eq(parameters.Environment, 'Test') }}:
+              NUGET_FEED_API_KEY: $(NUGET_FEED_API_KEY_TEST)
