@@ -6,7 +6,7 @@ trigger:
     # - "*"
 
 pool:
-  name: "Windows" # Run on a Windows agent. At the moment we need to push from a Windows-agent because the system-account has access to the NuGet-server with Windows authentication. This does not work on Linux-agents. We may get it to work, not sure.
+  name: "Linux"
 
 variables:
   PRODUCTION_DEPLOYMENT: $[eq(variables['Build.SourceBranchName'], 'main')]
