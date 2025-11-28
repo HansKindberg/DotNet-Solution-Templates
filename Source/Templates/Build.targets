@@ -275,7 +275,7 @@
 		<!-- Wait - we wait so the copying of files have time to finnish -->
 		<Wait Seconds="2" />
 	</Target>
-	<Target Name="Transform" BeforeTargets="Compile" DependsOnTargets="Prepare">
+	<Target Name="Transform" BeforeTargets="BeforeBuild" DependsOnTargets="Prepare">
 		<Message Importance="high" Text="Transform..." />
 		<ItemGroup>
 			<TemplateTransformFile Include="Content/*/.template.config/Template.Transform.json" />
