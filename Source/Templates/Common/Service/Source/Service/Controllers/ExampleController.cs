@@ -8,7 +8,7 @@ namespace Service.Controllers
 	{
 		#region Properties
 
-		protected internal virtual ILogger Logger { get; } = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger(typeof(ExampleController));
+		protected internal virtual ILogger Logger { get; } = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger<ExampleController>();
 
 		#endregion
 

@@ -10,7 +10,7 @@ namespace Bff.Pages
 	{
 		#region Properties
 
-		protected internal virtual ILogger Logger { get; } = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger(typeof(ErrorModel));
+		protected internal virtual ILogger Logger { get; } = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger<ErrorModel>();
 		public string? RequestId { get; set; }
 		public bool ShowRequestId => !string.IsNullOrEmpty(this.RequestId);
 
