@@ -273,7 +273,7 @@
 		<AppendTextToFile DestinationFiles="@(AppendKubernetesReadMeDestinationFile)" SourceFiles="@(AppendKubernetesReadMeSourceFile)" />
 
 		<!-- Wait - we wait so the copying of files have time to finnish -->
-		<Wait Seconds="2" />
+		<!--<Wait Seconds="2" />-->
 	</Target>
 	<Target Name="Transform" BeforeTargets="BeforeBuild" DependsOnTargets="Prepare">
 		<Message Importance="high" Text="Transform..." />
