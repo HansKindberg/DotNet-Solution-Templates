@@ -23,33 +23,29 @@ namespace Bff.Models.Web
 		protected internal virtual RequestDelegate Next { get; }
 		protected internal virtual IOptionsMonitor<BffOptions> OptionsMonitor { get; }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
 		public async Task Invoke(HttpContext context)
 		{
-			var endpoint = context.GetEndpoint();
+			var controllerAttribute = context.GetEndpoint()?.Metadata.GetMetadata<ControllerAttribute>();
 
-			if(endpoint != null)
+			if(controllerAttribute != null)
 			{
-				var controllerAttribute = endpoint.Metadata.GetMetadata<ControllerAttribute>();
+				var options = this.OptionsMonitor.CurrentValue;
 
-				if(controllerAttribute != null)
+				if(options.AntiForgeryEnabled)
 				{
-					var options = this.OptionsMonitor.CurrentValue;
+					var antiForgeryHeader = context.Request.Headers[options.AntiForgeryHeaderName].FirstOrDefault();
 
-					if(options.AntiForgeryEnabled)
+					if(antiForgeryHeader == null || antiForgeryHeader != options.AntiForgeryHeaderValue)
 					{
-						var antiForgeryHeader = context.Request.Headers[options.AntiForgeryHeaderName].FirstOrDefault();
-
-						if(antiForgeryHeader == null || antiForgeryHeader != options.AntiForgeryHeaderValue)
-						{
+						if(this.Logger.IsEnabled(LogLevel.Error))
 							this.Logger.LogError("Anti-forgery validation failed. Local path: \"{0}\"", context.Request.Path);
 
-							context.Response.StatusCode = 401;
-							return;
-						}
+						context.Response.StatusCode = 401;
+						return;
 					}
 				}
 			}
@@ -57,6 +53,6 @@ namespace Bff.Models.Web
 			await this.Next(context);
 		}
 
-		#endregion
-	}
+        #endregion
+    }
 }
