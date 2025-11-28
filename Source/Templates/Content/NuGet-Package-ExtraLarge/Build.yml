@@ -26,13 +26,17 @@ jobs:
     displayName: "Use .NET Core sdk 8.0"
     inputs:
       version: 8.0.x
-  - task: DotNetCoreCLI@2
-    displayName: "Restore"
+  - task: UseDotNet@2
+    displayName: "Use .NET Core sdk 9.0"
     inputs:
-      command: restore
-      feedsToUse: "config"
-      nugetConfigPath: "NuGet.config"
-      projects: "$(BUILD_PROJECTS)"
+      version: 9.0.x
+  - task: UseDotNet@2
+    displayName: "Use .NET Core sdk 10.0"
+    inputs:
+      version: 10.0.x
+  - script: |
+      dotnet restore
+    displayName: "Restore"
   - task: DotNetCoreCLI@2
     displayName: "Build"
     inputs:

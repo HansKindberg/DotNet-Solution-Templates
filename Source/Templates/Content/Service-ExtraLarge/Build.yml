@@ -15,19 +15,12 @@ jobs:
     clean: all
   steps:
   - task: UseDotNet@2
-    displayName: "Use .NET Core sdk 8.0"
+    displayName: "Use .NET Core sdk 10.0"
     inputs:
-      version: 8.0.x
-  - task: DotNetCoreCLI@2
+      version: 10.0.x
+  - script: |
+      dotnet restore
     displayName: "Restore"
-    env:
-      # https://learn.microsoft.com/en-us/dotnet/core/tools/nuget-signed-package-verification#linux
-      DOTNET_NUGET_SIGNATURE_VERIFICATION: false
-    inputs:
-      command: restore
-      feedsToUse: "config"
-      nugetConfigPath: "NuGet.config"
-      projects: "$(BUILD_PROJECTS)"
   - task: DotNetCoreCLI@2
     displayName: "Build"
     inputs:
@@ -35,9 +28,6 @@ jobs:
       projects: "$(BUILD_PROJECTS)"
   - task: DotNetCoreCLI@2
     displayName: "Test"
-    env:
-      # https://learn.microsoft.com/en-us/dotnet/core/tools/nuget-signed-package-verification#linux
-      DOTNET_NUGET_SIGNATURE_VERIFICATION: false
     inputs:
       arguments: "--configuration $(BUILD_CONFIGURATION)"
       command: test
