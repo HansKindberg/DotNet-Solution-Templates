@@ -1,0 +1,20 @@
+apiVersion: "k8s.ovn.org/v1"
+kind: "EgressFirewall"
+metadata:
+  annotations:
+    12.34.56.123/32: "log.example.org, to the log-platform for example (just an example - you should remove the 12.34.56.123/32 allow entry below)"
+  name: "default"
+spec:
+  egress:
+    - to:
+        cidrSelector: "12.34.56.123/32"
+      type: "Allow"
+    - to:
+        cidrSelector: "10.0.0.0/8"
+      type: "Deny"
+    - to:
+        cidrSelector: "123.34.0.0/12"
+      type: "Deny"
+    - to:
+        cidrSelector: "192.168.0.0/16"
+      type: "Deny"

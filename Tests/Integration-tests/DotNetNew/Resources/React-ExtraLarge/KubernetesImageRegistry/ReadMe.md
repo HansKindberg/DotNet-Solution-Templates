@@ -252,15 +252,15 @@ The following steps are for each environment:
 
 	To be able to connect to external resources, like a database or logging-endpoint, we need to replace the EgressNetworkPolicy.
 
-		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressNetworkPolicy.production-cluster.json -n example-application-production
+		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressFirewall.production-cluster.yml -n example-application-production
 
 	or
 
-		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressNetworkPolicy.development-cluster.json -n example-application-stage
+		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressFirewall.development-cluster.yml -n example-application-stage
 
 	or
 
-		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressNetworkPolicy.development-cluster.json -n example-application-test
+		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressFirewall.development-cluster.yml -n example-application-test
 
 #### 3.1.3 Secret variables
 
@@ -278,7 +278,7 @@ Add the following secret variables:
 
 - Kubernetes tokens:
 
-	The following secret varibles should get their value from 3.1.2 Kubernetes - step 8
+	The following secret varibles should get their value from 3.1.2 Kubernetes - step 7
 
 	- **KUBERNETES_API_TOKEN_PRODUCTION**
 	- **KUBERNETES_API_TOKEN_STAGE**

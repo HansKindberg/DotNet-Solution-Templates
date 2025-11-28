@@ -5,8 +5,8 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".kubernetes", ".kubernetes", "{00000000-0000-0000-0000-000000000001}"
 	ProjectSection(SolutionItems) = preProject
-		.kubernetes\EgressNetworkPolicy.development-cluster.json = .kubernetes\EgressNetworkPolicy.development-cluster.json
-		.kubernetes\EgressNetworkPolicy.production-cluster.json = .kubernetes\EgressNetworkPolicy.production-cluster.json
+		.kubernetes\EgressFirewall.development-cluster.yml = .kubernetes\EgressFirewall.development-cluster.yml
+		.kubernetes\EgressFirewall.production-cluster.yml = .kubernetes\EgressFirewall.production-cluster.yml
 		.kubernetes\ReadMe.md = .kubernetes\ReadMe.md
 		.kubernetes\Template.yml = .kubernetes\Template.yml
 	EndProjectSection

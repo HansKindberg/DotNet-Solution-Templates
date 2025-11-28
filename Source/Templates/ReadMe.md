@@ -139,8 +139,8 @@ The templates will create the following solution structure.
 ### 2.1 HK-AspNet-Razor-ExtraLarge
 
 - .kubernetes
-	- EgressNetworkPolicy.development-cluster.json
-	- EgressNetworkPolicy.production-cluster.json
+	- EgressFirewall.development-cluster.yml
+	- EgressFirewall.production-cluster.yml
 	- ReadMe.md
 	- Template.yml
 - Source
@@ -258,8 +258,8 @@ The templates will create the following solution structure.
 ### 2.5 HK-Blazor-ExtraLarge
 
 - .kubernetes
-	- EgressNetworkPolicy.development-cluster.json
-	- EgressNetworkPolicy.production-cluster.json
+	- EgressFirewall.development-cluster.yml
+	- EgressFirewall.production-cluster.yml
 	- ReadMe.md
 	- Template.yml
 - Source
@@ -551,8 +551,8 @@ Same as 2.8 HK-Blazor-Small but with a Duende BFF.
 ### 2.17 HK-React-ExtraLarge
 
 - .kubernetes
-	- EgressNetworkPolicy.development-cluster.json
-	- EgressNetworkPolicy.production-cluster.json
+	- EgressFirewall.development-cluster.yml
+	- EgressFirewall.production-cluster.yml
 	- ReadMe.md
 	- Template.yml
 - Source
@@ -778,8 +778,8 @@ Same as 2.20 HK-React-Small but with a Duende BFF.
 ### 2.25 HK-Service-ExtraLarge
 
 - .kubernetes
-	- EgressNetworkPolicy.development-cluster.json
-	- EgressNetworkPolicy.production-cluster.json
+	- EgressFirewall.development-cluster.yml
+	- EgressFirewall.production-cluster.yml
 	- ReadMe.md
 	- Template.yml
 - Source
