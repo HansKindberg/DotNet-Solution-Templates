@@ -18,7 +18,7 @@ namespace IntegrationTests.NuGetPackage.Content
 			using(var packageArchiveReader = this.CreatePackageArchiveReader())
 			{
 				var files = packageArchiveReader.GetFiles(this.BasePath);
-				Assert.Equal(55, files.Count());
+				Assert.Equal(53, files.Count());
 			}
 		}
 

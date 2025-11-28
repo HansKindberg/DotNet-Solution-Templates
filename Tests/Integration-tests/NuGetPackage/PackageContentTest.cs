@@ -33,7 +33,7 @@ namespace IntegrationTests.NuGetPackage
 				const string expectedVersion = "0.0.0.0";
 
 				Assert.False(contentItems[0].HasEmptyFolder);
-				Assert.Equal(1108, contentItems[0].Items.Count());
+				Assert.Equal(1072, contentItems[0].Items.Count());
 				Assert.True(contentItems[0].TargetFramework.AllFrameworkVersions);
 				Assert.Equal("Any,Version=v0.0", contentItems[0].TargetFramework.DotNetFrameworkName);
 				Assert.Empty(contentItems[0].TargetFramework.DotNetPlatformName);
@@ -53,7 +53,7 @@ namespace IntegrationTests.NuGetPackage
 				Assert.Equal(expectedVersion, contentItems[0].TargetFramework.Version.ToString());
 
 				Assert.False(contentItems[1].HasEmptyFolder);
-				Assert.Equal(55, contentItems[1].Items.Count());
+				Assert.Equal(53, contentItems[1].Items.Count());
 				Assert.True(contentItems[1].TargetFramework.AllFrameworkVersions);
 				Assert.Equal("ASP.NET,Version=v0.0,Profile=Razor-ExtraLarge", contentItems[1].TargetFramework.DotNetFrameworkName);
 				Assert.Empty(contentItems[1].TargetFramework.DotNetPlatformName);
@@ -73,7 +73,7 @@ namespace IntegrationTests.NuGetPackage
 				Assert.Equal(expectedVersion, contentItems[1].TargetFramework.Version.ToString());
 
 				Assert.False(contentItems[2].HasEmptyFolder);
-				Assert.Equal(47, contentItems[2].Items.Count());
+				Assert.Equal(45, contentItems[2].Items.Count());
 				Assert.True(contentItems[2].TargetFramework.AllFrameworkVersions);
 				Assert.Equal("ASP.NET,Version=v0.0,Profile=Razor-Large", contentItems[2].TargetFramework.DotNetFrameworkName);
 				Assert.Empty(contentItems[2].TargetFramework.DotNetPlatformName);
@@ -93,7 +93,7 @@ namespace IntegrationTests.NuGetPackage
 				Assert.Equal(expectedVersion, contentItems[2].TargetFramework.Version.ToString());
 
 				Assert.False(contentItems[3].HasEmptyFolder);
-				Assert.Equal(43, contentItems[3].Items.Count());
+				Assert.Equal(41, contentItems[3].Items.Count());
 				Assert.True(contentItems[3].TargetFramework.AllFrameworkVersions);
 				Assert.Equal("ASP.NET,Version=v0.0,Profile=Razor-Medium", contentItems[3].TargetFramework.DotNetFrameworkName);
 				Assert.Empty(contentItems[3].TargetFramework.DotNetPlatformName);
@@ -153,7 +153,7 @@ namespace IntegrationTests.NuGetPackage
 			using(var packageArchiveReader = new PackageArchiveReader(Global.NuGetPackageFile.FullName))
 			{
 				var files = packageArchiveReader.GetFiles();
-				Assert.Equal(1293, files.Count());
+				Assert.Equal(1251, files.Count());
 			}
 		}
 

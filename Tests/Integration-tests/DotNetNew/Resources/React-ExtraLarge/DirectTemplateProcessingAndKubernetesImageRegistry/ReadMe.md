@@ -203,54 +203,21 @@ The following steps are for each environment:
 
 		oc policy add-role-to-user edit system:serviceaccount:example-application-test:azure-devops
 
-7. View secrets information
+7. Create a token for the service-account
+											
+		oc create token azure-devops --duration=315576000s
 
-		oc get secrets
+	315576000 seconds = 10 years. Time-converter: https://www.unitconverters.net/time-converter.html
 
-	you get a result like this:
+	**Note/copy the token-value.** It should be added as value for the secret variables later.
 
-		NAME                           TYPE                                  DATA   AGE
-		azure-devops-dockercfg-abcde   kubernetes.io/dockercfg               1      30s
-		azure-devops-token-abcde       kubernetes.io/service-account-token   4      30s
-		builder-dockercfg-abcde        kubernetes.io/dockercfg               1      65s
-		builder-token-abcde            kubernetes.io/service-account-token   4      65s
-		default-dockercfg-abcde        kubernetes.io/dockercfg               1      65s
-		default-token-abcde            kubernetes.io/service-account-token   4      65s
-		deployer-dockercfg-abcde       kubernetes.io/dockercfg               1      65s
-		deployer-token-abcde           kubernetes.io/service-account-token   4      65s
+8. EgressFirewall
 
-	Note/copy the first secret-name starting with **azure-devops-token-***
-
-8. Get the token-value
-
-		oc describe secret azure-devops-token-abcde
-
-	You get a result like this (in case it is the production environment):
-
-		Name:         azure-devops-token-abcde
-		Namespace:    example-application-production
-		Labels:       <none>
-		Annotations:  kubernetes.io/service-account.name: azure-devops
-		              kubernetes.io/service-account.uid: 12345678-abcd-1234-abcd-0123456789ab
-
-		Type:  kubernetes.io/service-account-token
-
-		Data
-		====
-		ca.crt:          1234 bytes
-		namespace:       12 bytes
-		service-ca.crt:  1234 bytes
-		token:           {token}
-
-	Note/copy the **token**-value. It should be added as value for the secret variables later.
-
-9. EgressNetworkPolicy
-
-	Replace the EgressNetworkPolicy if your application "communicates" with external resources, like a database or logging-endpoint for example.
+	Replace the EgressFirewall if your application "communicates" with external resources, like a database or logging-endpoint for example.
 
 	**You will probably not have permissions for this so you need to ask an admin! Or ask to be joined to the system:muchos-derechos group/role.**
 
-	To be able to connect to external resources, like a database or logging-endpoint, we need to replace the EgressNetworkPolicy.
+	To be able to connect to external resources, like a database or logging-endpoint, we need to replace the EgressFirewall.
 
 		oc replace -f {PATH-TO-THIS-SOLUTION}\.kubernetes\EgressFirewall.production-cluster.yml -n example-application-production
 
