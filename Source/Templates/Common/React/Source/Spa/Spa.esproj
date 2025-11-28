@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.SDK/0.5.425631-alpha">
+<Project Sdk="Microsoft.VisualStudio.JavaScript.SDK/1.0.4110890">
 	<PropertyGroup>
 		<JavaScriptTestFramework>Jest</JavaScriptTestFramework>
 		<JavaScriptTestRoot>src\</JavaScriptTestRoot>
