@@ -15,7 +15,7 @@ const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)
 const certificateName = certificateArg ? certificateArg.groups.value : "Spa";
 
 if (!certificateName) {
-	console.error('Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.')
+	console.error('Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.');
 	process.exit(-1);
 }
 
@@ -30,7 +30,7 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
 		certFilePath,
 		'--format',
 		'Pem',
-		'--no-password',
+		'--no-password'
 	], { stdio: 'inherit', }).status) {
 		throw new Error("Could not create certificate.");
 	}
@@ -38,11 +38,18 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
 
 const proxy = {
 	target: 'https://localhost:5001/',
-	secure: false,
+	secure: false
 };
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	css: {
+		preprocessorOptions: {
+			scss: {
+				silenceDeprecations: ['color-functions', 'global-builtin', 'import']
+			}
+		}
+	},
 	plugins: [plugin()],
 	resolve: {
 		alias: {
@@ -52,7 +59,7 @@ export default defineConfig({
 	server: {
 		https: {
 			key: fs.readFileSync(keyFilePath),
-			cert: fs.readFileSync(certFilePath),
+			cert: fs.readFileSync(certFilePath)
 		},
 		port: 5000,
 		proxy: {
