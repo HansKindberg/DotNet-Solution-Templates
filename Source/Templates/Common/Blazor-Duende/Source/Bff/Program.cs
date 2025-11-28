@@ -43,7 +43,7 @@ if(builder.Environment.IsProduction())
 	{
 		options.AllowedHosts.Clear();
 		options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-		options.KnownNetworks.Clear();
+		options.KnownIPNetworks.Clear();
 		options.KnownProxies.Clear();
 	});
 }
