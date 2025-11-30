@@ -109,7 +109,7 @@ namespace IntegrationTests.DotNetNew
 			var expectedDeployYml = await File.ReadAllTextAsync(Path.Combine(resourcesDirectory.FullName, "Deploy.yml"));
 			Assert.Equal(expectedDeployYml, deployYml);
 
-			Assert.Equal(4, directoriesCount);
+			Assert.Equal(3, directoriesCount);
 			Assert.Equal(12, filesCount);
 
 			var expectedKubernetesTemplateYml = await File.ReadAllTextAsync(Path.Combine(defaultResourcesDirectory.FullName, ".kubernetes", "Template.yml"));

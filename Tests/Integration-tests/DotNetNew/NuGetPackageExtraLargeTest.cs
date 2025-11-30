@@ -48,7 +48,7 @@ namespace IntegrationTests.DotNetNew
 			var expectedDeployYml = await File.ReadAllTextAsync(Path.Combine(resourcesDirectory.FullName, "Deploy.yml"));
 			Assert.Equal(expectedDeployYml, deployYml);
 
-			Assert.Equal(3, directoriesCount);
+			Assert.Equal(2, directoriesCount);
 			Assert.Equal(11, filesCount);
 
 			var expectedPipelineYml = await File.ReadAllTextAsync(Path.Combine(resourcesDirectory.FullName, "Pipeline.yml"));
