@@ -14,19 +14,7 @@ The solution has two projects:
 - Bff, https://localhost:5001
 - Spa, https://localhost:5000
 
-During development we need to setup multiple startup projects.
-
-1. Right click the solution in **Solution Explorer**
-
-2. Click **Configure Startup Projects...**
-
-3. Check **Multiple startup projects:**
-
-4. Set action to **Start** on both the **Bff** and **Spa** project
-
-Hopefully there will come a solution for saving multiple startup projects to source control.
-
-- [Master .slnLaunch for Visual Studio 2022: Source-Controlled Multi-Project Startup Configurations!](https://www.youtube.com/watch?v=XJvIX4rCWCk)
+For development there is a launch profile named "Bff-Spa" that starts both the projects. The "Bff-Spa" launch profile is saved in a file named "Launch-profiles.slnLaunch".
 
 ### 1.2 Bff
 

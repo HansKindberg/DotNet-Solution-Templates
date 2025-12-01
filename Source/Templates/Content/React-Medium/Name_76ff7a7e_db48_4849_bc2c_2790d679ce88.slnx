@@ -3,6 +3,7 @@
 		<File Path=".dockerignore" />
 		<File Path=".editorconfig" />
 		<File Path=".gitignore" />
+		<File Path="Launch-profiles.slnLaunch" />
 		<File Path="NuGet.config" />
 		<File Path="ReadMe.md" />
 	</Folder>

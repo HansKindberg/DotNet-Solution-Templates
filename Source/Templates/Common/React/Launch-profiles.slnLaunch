@@ -1,0 +1,15 @@
+[
+	{
+		"Name": "Bff-Spa",
+		"Projects": [
+			{
+				"Action": "Start",
+				"Path": "Source\\Bff\\Bff.csproj"
+			},
+			{
+				"Action": "Start",
+				"Path": "Source\\Spa\\Spa.esproj"
+			}
+		]
+	}
+]

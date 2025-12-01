@@ -403,6 +403,7 @@ Source/Templates/Content/*/.template.config/*
 Source/Templates/Content/*/.editorconfig
 Source/Templates/Content/*/.gitignore
 Source/Templates/Content/*/.kubernetes
+Source/Templates/Content/*/Launch-profiles.slnLaunch
 Source/Templates/Content/*/NuGet.config
 Source/Templates/Content/*/ReadMe.md
 Source/Templates/Content/*/Tests/.editorconfig
