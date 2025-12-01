@@ -119,7 +119,7 @@ namespace IntegrationTests.DotNetNew
 			Assert.Equal(expectedPipelineYml, pipelineYml);
 
 			var expectedReadMeMd = await File.ReadAllTextAsync(Path.Combine(resourcesDirectory.FullName, "ReadMe.md"));
-			expectedReadMeMd = expectedReadMeMd.Replace("Name_76ff7a7e_db48_4849_bc2c_2790d679ce88", output.Replace("-", "_"));
+			expectedReadMeMd = expectedReadMeMd.Replace("Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88", output);
 			Assert.Equal(expectedReadMeMd, readMeMd);
 
 			var expectedVariablesYml = await File.ReadAllTextAsync(Path.Combine(resourcesDirectory.FullName, "Variables.yml"));

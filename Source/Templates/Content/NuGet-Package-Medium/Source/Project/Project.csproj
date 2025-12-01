@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<AssemblyName>Name_76ff7a7e_db48_4849_bc2c_2790d679ce88</AssemblyName>
+		<AssemblyName>Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88</AssemblyName>
 		<Authors>Your name / your organization name</Authors>
 		<Company>$(Authors)</Company>
 		<Description>Description for NuGet-Package.</Description>
@@ -13,7 +13,7 @@
 		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
 		<PackageReleaseNotes>https://example.org/Organization/_git/Project/tags</PackageReleaseNotes>
 		<PackageTags></PackageTags>
-		<RootNamespace>Name_76ff7a7e_db48_4849_bc2c_2790d679ce88</RootNamespace>
+		<RootNamespace>Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88</RootNamespace>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<VersionPrefix>0.0.1</VersionPrefix>
 		<VersionSuffix>alpha</VersionSuffix>

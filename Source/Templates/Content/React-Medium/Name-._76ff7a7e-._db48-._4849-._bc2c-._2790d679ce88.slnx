@@ -3,12 +3,17 @@
 		<File Path=".dockerignore" />
 		<File Path=".editorconfig" />
 		<File Path=".gitignore" />
-		<File Path="Launch-profiles.slnLaunch" />
 		<File Path="NuGet.config" />
 		<File Path="ReadMe.md" />
+		<File Path="Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88.slnLaunch" />
 	</Folder>
 	<Folder Name="/Source/">
 		<Project DefaultStartup="true" Path="Source/Bff/Bff.csproj" />
 		<Project Path="Source/Spa/Spa.esproj" />
+	</Folder>
+	<Folder Name="/Tests/">
+		<File Path="Tests/.editorconfig" />
+		<Project Path="Tests/Integration-tests/Integration-tests.csproj" />
+		<Project Path="Tests/Unit-tests/Unit-tests.csproj" />
 	</Folder>
 </Solution>

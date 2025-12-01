@@ -163,7 +163,20 @@ cd to your project directory.
 
 	dotnet new hk-service-xl --name hk-service-xl --directTemplateProcessing false/true --kubernetesImageRegistry false/true
 
-### 3.4 Links
+### 3.4 Reminder
+
+Why the source-name **Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88**?
+
+- ["sourceName": "Name_76ff7a7e_db48_4849_bc2c_2790d679ce88"](/Source/Templates/Common/All/.template.config/Template.Source.json#L119)
+
+It is for handling renames better in the solutions created from this template.
+
+Read more here:
+
+- [Using hyphens or dots for the sourceName #588](https://github.com/dotnet/templating/issues/588)
+- [sourceName replacement ("." -> "_") #402](https://github.com/dotnet/templating/issues/402)
+
+### 3.5 Links
 
 - [Package authoring best practices](https://learn.microsoft.com/en-us/nuget/create-packages/package-authoring-best-practices)
 

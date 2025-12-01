@@ -8,7 +8,7 @@ namespace IntegrationTests.NuGetPackage.Content
 		#region Properties
 
 		public abstract string BasePath { get; }
-		public virtual string ReadMeHeading => "# Name_76ff7a7e_db48_4849_bc2c_2790d679ce88";
+		public virtual string ReadMeHeading => "# Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88";
 
 		#endregion
 

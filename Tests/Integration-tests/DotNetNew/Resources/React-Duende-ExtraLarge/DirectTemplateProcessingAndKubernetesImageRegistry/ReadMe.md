@@ -1,4 +1,4 @@
-# Name_76ff7a7e_db48_4849_bc2c_2790d679ce88
+# Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88
 
 ## 1 Development
 
@@ -14,7 +14,7 @@ The solution has two projects:
 - Bff, https://localhost:5001
 - Spa, https://localhost:5000
 
-For development there is a launch profile named "Bff-Spa" that starts both the projects. The "Bff-Spa" launch profile is saved in a file named "Launch-profiles.slnLaunch".
+For development there is a launch profile named "Bff-Spa" that starts both the projects. The "Bff-Spa" launch profile is saved in the Name-._76ff7a7e-._db48-._4849-._bc2c-._2790d679ce88.slnLaunch file.
 
 ### 1.2 Bff
 
