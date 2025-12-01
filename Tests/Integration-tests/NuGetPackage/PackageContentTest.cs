@@ -33,7 +33,7 @@ namespace IntegrationTests.NuGetPackage
 				const string expectedVersion = "0.0.0.0";
 
 				Assert.False(contentItems[0].HasEmptyFolder);
-				Assert.Equal(1072, contentItems[0].Items.Count());
+				Assert.Equal(1080, contentItems[0].Items.Count());
 				Assert.True(contentItems[0].TargetFramework.AllFrameworkVersions);
 				Assert.Equal("Any,Version=v0.0", contentItems[0].TargetFramework.DotNetFrameworkName);
 				Assert.Empty(contentItems[0].TargetFramework.DotNetPlatformName);
@@ -153,7 +153,7 @@ namespace IntegrationTests.NuGetPackage
 			using(var packageArchiveReader = new PackageArchiveReader(Global.NuGetPackageFile.FullName))
 			{
 				var files = packageArchiveReader.GetFiles();
-				Assert.Equal(1251, files.Count());
+				Assert.Equal(1259, files.Count());
 			}
 		}
 
