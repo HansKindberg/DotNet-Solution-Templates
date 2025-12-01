@@ -163,16 +163,7 @@ cd to your project directory.
 
 	dotnet new hk-service-xl --name hk-service-xl --directTemplateProcessing false/true --kubernetesImageRegistry false/true
 
-### 3.4 Important
-
-We have experienced problems when the solution-files included in the templates are not **UTF-8-BOM** encoded. If we make changes in the *.sln files we should verify that they are **UTF-8-BOM** encoded. If not, make them **UTF-8-BOM** encoded with Notepadd++ for example.
-
-This seems to happen even if we have this in .editorconfig:
-
-	[*.{cshtml,sln}]
-	charset = utf-8-bom
-
-### 3.5 Links
+### 3.4 Links
 
 - [Package authoring best practices](https://learn.microsoft.com/en-us/nuget/create-packages/package-authoring-best-practices)
 

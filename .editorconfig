@@ -10,7 +10,7 @@ insert_final_newline = false
 tab_width = 4
 trim_trailing_whitespace = true
 
-[*.{cshtml,sln}]
+[*.cshtml]
 charset = utf-8-bom
 
 # Tabs are not supported in YAML: https://yaml.org/faq.html
